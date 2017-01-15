@@ -1,0 +1,39 @@
+{
+  "coord": {
+    "lon": -122.35,
+    "lat": 47.52
+  },
+  "weather": [{
+    "id": 600,
+    "main": "Snow",
+    "description": "light snow",
+    "icon": "13n"
+  }],
+  "base": "cmc stations",
+  "main": {
+    "temp": 34.34,
+    "pressure": 1013,
+    "humidity": 100,
+    "temp_min": 30.2,
+    "temp_max": 37.4
+  },
+  "wind": {
+    "speed": 8.86,
+    "deg": 330
+  },
+  "clouds": {
+    "all": 90
+  },
+  "dt": 1451875616,
+  "sys": {
+    "type": 1,
+    "id": 2949,
+    "message": 0.007,
+    "country": "US",
+    "sunrise": 1451923025,
+    "sunset": 1451953906
+  },
+  "id": 5815759,
+  "name": "White Center",
+  "cod": 200
+}

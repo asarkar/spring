@@ -1,0 +1,23 @@
+{
+  "name": "Hello World",
+  "description": "Application that displays various countries, cities and languages spoken. Uses MySQL World schema.",
+  "keywords": [
+    "java",
+    "spring boot",
+    "mysql",
+    "docker",
+    "heroku",
+    "angular js"
+  ],
+  "website": "http://abhijitsarkar-hello-world.herokuapp.com/",
+  "success_url": "/index.html",
+  "image": "heroku/java",
+  "addons": [
+    "jawsdb"
+  ],
+  "buildpacks": [
+    {
+      "url": "https://github.com/heroku/heroku-buildpack-gradle"
+    }
+  ]
+}

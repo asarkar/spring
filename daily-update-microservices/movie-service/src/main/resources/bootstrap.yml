@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: movie-service
+  cloud:
+    config:
+#        uri: http://${CONFIG_HOST:localhost}:${CONFIG_PORT:8888}
+#        failFast: false
+    # Instead of going directly to config service, go via discovery service
+    # Only works if config service is already registered with discovery service
+      discovery:
+        enabled: true
+        serviceId: config-service
+
+eureka:
+  instance:
+    hostname: ${MOVIE_HOST:localhost}
+    preferIpAddress: true
+    leaseRenewalIntervalInSeconds: 10
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone: http://${DISCOVERY_HOST:localhost}:${DISCOVERY_PORT:8761}/eureka/
+encrypt:
+  key: ${ENCRYPT_KEY:n/a}

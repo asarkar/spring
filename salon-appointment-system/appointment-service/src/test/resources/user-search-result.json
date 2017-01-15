@@ -1,0 +1,30 @@
+{
+  "_links" : {
+    "self" : {
+      "href" : "http://hostname/users/search/findByLastName?lastName=doe{&page,size,sort}",
+      "templated" : true
+    }
+  },
+  "_embedded" : {
+    "users" : [ {
+      "firstName" : "John",
+      "lastName" : "Doe",
+      "phoneNum" : "111-111-1111",
+      "email" : null,
+      "_links" : { },
+      "_embedded" : { },
+      "_links" : {
+        "self" : {
+          "href" : "http://hostname/users/1",
+          "templated" : false
+        }
+      }
+    } ]
+  },
+  "page" : {
+    "size" : 20,
+    "totalElements" : 1,
+    "totalPages" : 1,
+    "number" : 0
+  }
+}

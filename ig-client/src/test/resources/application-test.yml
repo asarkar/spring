@@ -1,0 +1,3 @@
+instagram.baseUrl: http://localhost:${server.port}
+CLIENT_ID: whatever
+CLIENT_SECRET: whatever

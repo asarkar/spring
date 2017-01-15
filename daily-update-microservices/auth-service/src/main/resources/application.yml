@@ -1,0 +1,8 @@
+server:
+  port: ${HTTP_PORT:9000}
+logging:
+  level:
+    ROOT: INFO
+    org.springframework.web: DEBUG
+    org.springframework.security: DEBUG
+  file: ${LOG_LOCATION:/var/log/daily-update/${spring.application.name:auth-service}.log}

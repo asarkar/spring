@@ -1,0 +1,28 @@
+.search-panel {
+    margin: 1% 1% 1% 15%;
+    width: 900px;
+    float: center;
+}
+.search-box {
+    border-radius: 4px !important;
+    width: 30em !important;
+}
+.search-label {
+    margin: 1% 1% 1% 15%;
+    width: 900px;
+    float: center;
+}
+.search-btn {
+    float: center;
+    margin: 1% 1% 1% 16%;
+}
+.divider {
+    margin: 3% 1% 3% 16%;
+    width: 875px;
+    float: center;
+}
+.result-panel {
+    margin: 1% 1% 1% 16%;
+    width: 875px;
+    float: center;
+}

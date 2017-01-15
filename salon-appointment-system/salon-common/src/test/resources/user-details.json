@@ -1,0 +1,14 @@
+{
+    "userId": 1,
+    "username": "test",
+    "password": "test",
+    "authorities": [
+        {
+            "authority": "ROLE_ANONYMOUS"
+        }
+    ],
+    "enabled": true,
+    "accountNonExpired": true,
+    "accountNonLocked": true,
+    "credentialsNonExpired": true
+}

@@ -1,0 +1,9 @@
+travel-app:
+  build: .
+  ports:
+    - "8080:8080"
+  env_file:
+    - ./gradle-local.properties
+  environment:
+    - SPRING_PROFILES_ACTIVE=noDB
+  entrypoint: supervisord -c /etc/supervisord.conf

@@ -1,0 +1,26 @@
+server:
+  port: ${HTTP_PORT:8080}
+logging:
+  level:
+    ROOT: INFO
+    org.springframework.web: DEBUG
+    org.springframework.security: DEBUG
+  file: ${LOG_LOCATION:/var/log/daily-update/${spring.application.name:gateway-service}.log}
+zuul:
+#  Disable Ribbon routing. We're rolling our own that can do auth.
+  RibbonRoutingFilter.route.disable: true
+  ignoredServices: '*'
+  routes:
+    movie-service:
+      path: /movies/**
+      stripPrefix: false
+    news-service:
+      path: /news/**
+      stripPrefix: false
+    weather-service:
+      path: /weather/**
+      stripPrefix: false
+    daily-update-service:
+      path: /dailyupdate/**
+      stripPrefix: false
+

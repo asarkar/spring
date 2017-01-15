@@ -1,0 +1,5 @@
+instagram:
+  baseUrl: https://api.instagram.com
+  authorizeUrl: ${instagram.baseUrl}/oauth/authorize
+  accessTokenUrl: ${instagram.baseUrl}/oauth/access_token
+  recentPostsUrl: ${instagram.baseUrl}/v1/users/self/media/recent

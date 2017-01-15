@@ -1,0 +1,22 @@
+{
+  "abhijitsarkar": {
+    "password": "secret",
+    "enabled": true
+  },
+  "johndoe": {
+    "password": "secret",
+    "enabled": true
+  },
+  "janedoe": {
+    "password": "secret",
+    "enabled": true
+  },
+  "johnnyappleseed": {
+    "password": "secret",
+    "enabled": true
+  },
+  "nopayer": {
+    "password": "secret",
+    "enabled": false
+  }
+}

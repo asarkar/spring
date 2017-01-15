@@ -1,0 +1,10 @@
+server:
+  port: ${HTTP_PORT:10010}
+the-movie-db:
+  ribbon:
+    listOfServers: ${the-movie-db.base-url}
+logging:
+  level:
+    ROOT: INFO
+    org.springframework.web: DEBUG
+  file: ${LOG_LOCATION:/var/log/daily-update/${spring.application.name:movie-service}.log}

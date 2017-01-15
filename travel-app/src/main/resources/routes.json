@@ -1,0 +1,190 @@
+[{
+  "srcAirportFaa": "SEA",
+  "destAirportFaa": "SFO",
+  "stops": 0,
+  "aircraft": "737",
+  "airline": "American Airlines",
+  "flightNum": "AA044",
+  "departureTimeUTC": "03:54:00+08:00",
+  "departureDay": 0
+}, {
+  "srcAirportFaa": "SEA",
+  "destAirportFaa": "SFO",
+  "stops": 0,
+  "aircraft": "737",
+  "airline": "American Airlines",
+  "flightNum": "AA941",
+  "departureTimeUTC": "13:36:00+08:00",
+  "departureDay": 0
+}, {
+  "srcAirportFaa": "SEA",
+  "destAirportFaa": "SFO",
+  "stops": 0,
+  "aircraft": "737",
+  "airline": "American Airlines",
+  "flightNum": "AA660",
+  "departureTimeUTC": "13:38:00+08:00",
+  "departureDay": 0
+}, {
+  "srcAirportFaa": "SEA",
+  "destAirportFaa": "SFO",
+  "stops": 0,
+  "aircraft": "737",
+  "airline": "American Airlines",
+  "flightNum": "AA874",
+  "departureTimeUTC": "22:36:00+08:00",
+  "departureDay": 1
+}, {
+  "srcAirportFaa": "SEA",
+  "destAirportFaa": "SFO",
+  "stops": 0,
+  "aircraft": "E75 734",
+  "airline": "Delta Air Lines",
+  "flightNum": "DL765",
+  "departureTimeUTC": "03:39:00+08:00",
+  "departureDay": 1
+}, {
+  "srcAirportFaa": "SEA",
+  "destAirportFaa": "SFO",
+  "stops": 0,
+  "aircraft": "E75 734",
+  "airline": "Delta Air Lines",
+  "flightNum": "DL749",
+  "departureTimeUTC": "00:50:00+08:00",
+  "departureDay": 1
+}, {
+  "srcAirportFaa": "SEA",
+  "destAirportFaa": "SFO",
+  "stops": 0,
+  "aircraft": "737",
+  "airline": "American Airlines",
+  "flightNum": "AA288",
+  "departureTimeUTC": "21:16:00+08:00",
+  "departureDay": 2
+}, {
+  "srcAirportFaa": "SEA",
+  "destAirportFaa": "SFO",
+  "stops": 0,
+  "aircraft": "737",
+  "airline": "American Airlines",
+  "flightNum": "AA367",
+  "departureTimeUTC": "17:36:00+08:00",
+  "departureDay": 2
+}, {
+  "srcAirportFaa": "SEA",
+  "destAirportFaa": "SFO",
+  "stops": 0,
+  "aircraft": "737",
+  "airline": "American Airlines",
+  "flightNum": "AA289",
+  "departureTimeUTC": "09:58:00+08:00",
+  "departureDay": 2
+}, {
+  "srcAirportFaa": "SEA",
+  "destAirportFaa": "SFO",
+  "stops": 0,
+  "aircraft": "737",
+  "airline": "American Airlines",
+  "flightNum": "AA798",
+  "departureTimeUTC": "01:08:00+08:00",
+  "departureDay": 3
+}, {
+  "srcAirportFaa": "SEA",
+  "destAirportFaa": "SFO",
+  "stops": 0,
+  "aircraft": "E75 734",
+  "airline": "Delta Air Lines",
+  "flightNum": "DL729",
+  "departureTimeUTC": "22:38:00+08:00",
+  "departureDay": 3
+}, {
+  "srcAirportFaa": "SEA",
+  "destAirportFaa": "SFO",
+  "stops": 0,
+  "aircraft": "E75 734",
+  "airline": "Delta Air Lines",
+  "flightNum": "DL050",
+  "departureTimeUTC": "07:39:00+08:00",
+  "departureDay": 3
+}, {
+  "srcAirportFaa": "SEA",
+  "destAirportFaa": "SFO",
+  "stops": 0,
+  "aircraft": "737",
+  "airline": "American Airlines",
+  "flightNum": "AA198",
+  "departureTimeUTC": "13:09:00+08:00",
+  "departureDay": 4
+}, {
+  "srcAirportFaa": "SEA",
+  "destAirportFaa": "SFO",
+  "stops": 0,
+  "aircraft": "737",
+  "airline": "American Airlines",
+  "flightNum": "AA252",
+  "departureTimeUTC": "09:44:00+08:00",
+  "departureDay": 4
+}, {
+  "srcAirportFaa": "SEA",
+  "destAirportFaa": "SFO",
+  "stops": 0,
+  "aircraft": "E75 734",
+  "airline": "Delta Air Lines",
+  "flightNum": "DL070",
+  "departureTimeUTC": "21:41:00+08:00",
+  "departureDay": 4
+}, {
+  "srcAirportFaa": "SEA",
+  "destAirportFaa": "SFO",
+  "stops": 0,
+  "aircraft": "737",
+  "airline": "American Airlines",
+  "flightNum": "AA195",
+  "departureTimeUTC": "15:40:00+08:00",
+  "departureDay": 5
+}, {
+  "srcAirportFaa": "SEA",
+  "destAirportFaa": "SFO",
+  "stops": 0,
+  "aircraft": "E75 734",
+  "airline": "Delta Air Lines",
+  "flightNum": "DL482",
+  "departureTimeUTC": "17:38:00+08:00",
+  "departureDay": 5
+}, {
+  "srcAirportFaa": "SEA",
+  "destAirportFaa": "SFO",
+  "stops": 0,
+  "aircraft": "E75 734",
+  "airline": "Delta Air Lines",
+  "flightNum": "DL170",
+  "departureTimeUTC": "16:57:00+08:00",
+  "departureDay": 5
+}, {
+  "srcAirportFaa": "SEA",
+  "destAirportFaa": "SFO",
+  "stops": 0,
+  "aircraft": "737",
+  "airline": "American Airlines",
+  "flightNum": "AA896",
+  "departureTimeUTC": "20:20:00+08:00",
+  "departureDay": 6
+}, {
+  "srcAirportFaa": "SEA",
+  "destAirportFaa": "SFO",
+  "stops": 0,
+  "aircraft": "E75 734",
+  "airline": "Delta Air Lines",
+  "flightNum": "DL271",
+  "departureTimeUTC": "20:06:00+08:00",
+  "departureDay": 6
+}, {
+  "srcAirportFaa": "SEA",
+  "destAirportFaa": "SFO",
+  "stops": 0,
+  "aircraft": "E75 734",
+  "airline": "Delta Air Lines",
+  "flightNum": "DL362",
+  "departureTimeUTC": "04:09:00+08:00",
+  "departureDay": 6
+}]

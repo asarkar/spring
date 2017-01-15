@@ -1,0 +1,24 @@
+<div class="row search-label">
+    <div ng-show="loadingAirports" class="col-md-6">
+        <i class="glyphicon glyphicon-refresh"></i> Searching...
+    </div>
+    <div ng-show="noResults" class="col-md-6">
+        <i class="glyphicon glyphicon-remove"></i> No Results Found
+    </div>
+</div>
+<div class="row search-panel">
+    <div class="col-md-6">
+        <p class="input-group">
+            <input type="text" placeholder="From Airport" class="form-control search-box" ng-model="flight.srcAirport"
+                   uib-typeahead="airport as airport.name for airport in findAirports($viewValue)"
+                   typeahead-min-length="3" typeahead-loading="loadingAirports" typeahead-no-results="noResults">
+        </p>
+    </div>
+    <div class="col-md-6">
+        <p class="input-group">
+            <input type="text" placeholder="To Airport" class="form-control search-box" ng-model="flight.destAirport"
+                   uib-typeahead="airport as airport.name for airport in findAirports($viewValue)"
+                   typeahead-min-length="3" typeahead-loading="loadingAirports" typeahead-no-results="noResults">
+        </p>
+    </div>
+</div>

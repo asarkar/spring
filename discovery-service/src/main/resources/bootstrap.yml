@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: discovery-service
+
+eureka:
+  instance:
+    hostname: ${DISCOVERY_HOST:localhost}
+    preferIpAddress: true
+  client:
+    registerWithEureka: false
+    fetchRegistry: false
+
+#security:
+#  basic:
+#    enabled: true
+#  user:
+#      name: app
+#      password: secret

@@ -1,0 +1,3 @@
+nyt:
+  base-url: http://api.nytimes.com
+  top-stories.api-key: '{cipher}954b3588aafc0ca0f331024484e091d07a99519525219de604ce5db8ad983c16e4c4b3943ef01672fa28395c1202d94f96bedc117a445414a51bbf7a217500ab'

@@ -1,0 +1,11 @@
+spring:
+  cloud:
+    config:
+      server:
+        git:
+          uri: ${CONFIG_LOCATION}
+        native:
+          searchLocations: ${CONFIG_LOCATION}
+server:
+  port: ${HTTP_PORT:8888}
+

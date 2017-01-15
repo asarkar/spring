@@ -1,0 +1,17 @@
+hello-world:
+  container_name: "hello-world"
+  build: .
+  ports:
+    - "8080:8080"
+  links:
+    - mysql
+  environment:
+      # Note no dash at the beginning of line for a key-value pair.
+      RETRY_INTERVAL: 2
+  env_file:
+    - ./gradle-local.properties
+mysql:
+  container_name: "mysql"
+  image: abhijitsarkar/docker:mysql5
+  ports:
+      - "3306:3306"

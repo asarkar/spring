@@ -1,0 +1,15 @@
+[{
+  "name": "Seattle Tacoma Intl",
+  "city": "Seattle",
+  "country": "United States",
+  "faaCode": "SEA",
+  "icaoCode": "KSEA",
+  "timeZoneOffset": "-08:00"
+}, {
+  "name": "San Francisco Intl",
+  "city": "San Francisco",
+  "country": "United States",
+  "faaCode": "SFO",
+  "icaoCode": "KSFO",
+  "timeZoneOffset": "-08:00"
+}]

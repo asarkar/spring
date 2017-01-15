@@ -1,0 +1,50 @@
+daily_update_service:
+  image: abhijitsarkar/java-ee:daily-update-service
+  ports:
+    - 10050:10050
+  environment:
+    DISCOVERY_HOST: $DOCKER_MACHINE_HOST
+    DAILY_UPDATE_HOST: $DOCKER_MACHINE_HOST
+    MANCENTER_HOST: $DOCKER_MACHINE_HOST
+movie_service:
+  image: abhijitsarkar/java-ee:movie-service
+  ports:
+    - 10010:10010
+  environment:
+    DISCOVERY_HOST: $DOCKER_MACHINE_HOST
+    MOVIE_HOST: $DOCKER_MACHINE_HOST
+    MANCENTER_HOST: $DOCKER_MACHINE_HOST
+    ENCRYPT_KEY: "${ENCRYPT_KEY}"
+news_service:
+  image: abhijitsarkar/java-ee:news-service
+  ports:
+    - 10020:10020
+  environment:
+    DISCOVERY_HOST: $DOCKER_MACHINE_HOST
+    NEWS_HOST: $DOCKER_MACHINE_HOST
+    MANCENTER_HOST: $DOCKER_MACHINE_HOST
+    ENCRYPT_KEY: "${ENCRYPT_KEY}"
+weather_service:
+  image: abhijitsarkar/java-ee:weather-service
+  ports:
+    - 10030:10030
+  environment:
+    DISCOVERY_HOST: $DOCKER_MACHINE_HOST
+    WEATHER_HOST: $DOCKER_MACHINE_HOST
+    MANCENTER_HOST: $DOCKER_MACHINE_HOST
+    ENCRYPT_KEY: "${ENCRYPT_KEY}"
+auth:
+  image: abhijitsarkar/java-ee:auth-service
+  ports:
+    - 9000:9000
+  environment:
+    DISCOVERY_HOST: $DOCKER_MACHINE_HOST
+    AUTH_HOST: $DOCKER_MACHINE_HOST
+gateway:
+  image: abhijitsarkar/java-ee:gateway-service
+  ports:
+    - 8080:8080
+  environment:
+    DISCOVERY_HOST: $DOCKER_MACHINE_HOST
+    GATEWAY_HOST: $DOCKER_MACHINE_HOST
+    MANCENTER_HOST: $DOCKER_MACHINE_HOST

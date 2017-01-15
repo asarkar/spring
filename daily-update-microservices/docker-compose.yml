@@ -1,0 +1,18 @@
+discovery:
+  image: abhijitsarkar/java-ee:discovery-service
+  ports:
+    - 8761:8761
+  environment:
+    DISCOVERY_HOST: $DOCKER_MACHINE_HOST
+config:
+  image: abhijitsarkar/java-ee:config-service
+  ports:
+      - 8888:8888
+  environment:
+    SPRING_PROFILES_ACTIVE: native
+    CONFIG_LOCATION: "file:/etc/daily-update-microservices/config/"
+    DISCOVERY_HOST: $DOCKER_MACHINE_HOST
+    CONFIG_HOST: $DOCKER_MACHINE_HOST
+    ENCRYPT_KEY: "${ENCRYPT_KEY}"
+  volumes:
+      - "./config/:/etc/daily-update-microservices/config/"

@@ -1,0 +1,23 @@
+{
+  "name": "Travel App",
+  "description": "Application that allows users to find flights by entering airports and travel dates. Uses Couchbase travel-sample bucket.",
+  "keywords": [
+    "java",
+    "spring boot",
+    "couchbase",
+    "docker",
+    "heroku",
+    "angular"
+  ],
+  "website": "http://nameless-island-5362.herokuapp.com/helloworld/",
+  "success_url": "/index.html",
+  "image": "heroku/java",
+  "addons": [
+    "jawsdb"
+  ],
+  "buildpacks": [
+    {
+      "url": "https://github.com/heroku/heroku-buildpack-gradle"
+    }
+  ]
+}

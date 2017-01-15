@@ -1,0 +1,3 @@
+open-weather-map:
+  base-url: http://api.openweathermap.org/data/2.5
+  api-key: '{cipher}eb865a59e143e6828349fb66f33e11a0ba34f3023b62c7f3f1d68a3b18c5b0f2869b653b361ee3eae72c8dd98f92d51037322343937eb003511ec2ce46755556'

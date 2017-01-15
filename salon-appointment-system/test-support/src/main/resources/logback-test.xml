@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration>
+
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%date{"yyyy-MM-dd HH:mm:ss.SSS", EST} [%thread] [%-5level]
+				%logger{3} - %msg%n</pattern>
+		</encoder>
+	</appender>
+
+	<!-- the level of the root level is set to DEBUG by default. -->
+	<root level="WARN">
+		<appender-ref ref="STDOUT" />
+	</root>
+
+	<logger name="org.hibernate" level="debug" />
+	<logger name="name.abhijitsarkar" level="debug" />
+
+</configuration>

@@ -1,0 +1,10 @@
+server:
+  port: ${HTTP_PORT:10030}
+nyt:
+  ribbon:
+    listOfServers: ${open-weather-map.base-url}
+logging:
+  level:
+    ROOT: INFO
+    org.springframework.web: DEBUG
+  file: ${LOG_LOCATION:/var/log/daily-update/${spring.application.name:weather-service}.log}

@@ -1,0 +1,6 @@
+dependencies {
+    compile "org.springframework.boot:spring-boot-starter-security:${project['spring.boot.version']}"
+    compile "org.springframework.session:spring-session:${project['spring.session.version']}"
+
+    compile project(':commons')
+}

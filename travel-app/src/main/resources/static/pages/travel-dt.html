@@ -1,0 +1,13 @@
+<div class="row search-panel">
+    <div class="col-md-6">
+        <p class="input-group">
+            <input type="text" placeholder="Departure Date" class="form-control" uib-datepicker-popup="{{format}}"
+                   ng-model="flight.departureDt"
+                   is-open="departureDtStatus.opened" min-date="minDate" max-date="maxDate" ng-required="true"/>
+              <span class="input-group-btn">
+                <button type="button" id="departureDt" class="btn btn-default" ng-click="open($event)"><i
+                        class="glyphicon glyphicon-calendar"></i></button>
+              </span>
+        </p>
+    </div>
+</div>

@@ -1,0 +1,171 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            url 'https://plugins.gradle.org/m2/'
+        }
+    }
+    dependencies {
+        classpath(
+                "org.springframework.boot:spring-boot-gradle-plugin:${project['spring.boot.version']}",
+                "com.bmuschko:gradle-docker-plugin:${project['plugin.docker.version']}",
+                "io.spring.gradle:dependency-management-plugin:${project['plugin.dependency-management.version']}",
+                "gradle.plugin.net.franz-becker:gradle-lombok:${project['plugin.lombok.version']}"
+        )
+    }
+}
+
+
+import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
+
+//import org.apache.tools.ant.filters.ReplaceTokens
+
+allprojects {
+    apply plugin: 'idea'
+    apply plugin: 'groovy'
+
+    apply from: "${project['gradle-common.url']}"
+
+    group = 'name.abhijitsarkar.javaee'
+    version = '1.0-SNAPSHOT'
+
+    // Find the first non-null task
+    def defaultBuildTask = ['buildDockerImage', 'build'].findResult { project.tasks.findByName(it) }
+
+    defaultTasks 'clean', defaultBuildTask.name
+}
+
+subprojects {
+    apply plugin: 'io.spring.dependency-management'
+    apply plugin: 'net.franz-becker.gradle-lombok'
+
+    repositories {
+        mavenCentral()
+
+        maven {
+            url "http://repo.spring.io/milestone"
+        }
+    }
+
+    dependencyManagement {
+        imports {
+            mavenBom "org.springframework.boot:spring-boot-starter-parent:${project['spring.boot.version']}"
+        }
+
+        dependencies {
+            "org.springframework:spring-webmvc:${project['spring.version']}"
+            "org.springframework.boot:spring-boot:${project['spring.boot.version']}"
+
+            dependencySet(group: 'com.fasterxml.jackson.core', version: "${project['jackson.version']}") {
+                entry 'jackson-core'
+                entry 'jackson-databind'
+                entry 'jackson-annotations'
+            }
+        }
+    }
+
+    dependencies {
+        compile 'org.springframework.boot:spring-boot-starter-web'
+        compile "org.projectlombok:lombok:${project['lombok.version']}"
+        testCompile "org.springframework.boot:spring-boot-starter-test:${project['spring.boot.version']}"
+        testCompile "org.jmockit:jmockit:${project['jmockit.version']}"
+        testCompile "org.hamcrest:hamcrest-all:${project['hamcrest.version']}"
+        testCompile "org.spockframework:spock-core:${project['spock.version']}"
+        testCompile "org.spockframework:spock-spring:${project['spock.version']}"
+        testCompile "org.codehaus.groovy:groovy-all:${project['groovy.version']}"
+    }
+
+    lombok {
+        version = "${project['lombok.version']}"
+    }
+
+    /* Gradle screws up class files if files not selected for filtering
+     * https://issues.gradle.org/browse/GRADLE-1566
+     */
+//    processResources {
+//        def mancenterHost = System.properties['MANCENTER_HOST'] ?: 'localhost'
+//        def mancenterPort = System.properties['MANCENTER_PORT'] ?: '12000'
+//
+//        from(sourceSets.main.resources.srcDirs) {
+//            include 'hazelcast.xml'
+//            filter(ReplaceTokens, tokens: ['MANCENTER_HOST': mancenterHost])
+//            filter(ReplaceTokens, tokens: ['MANCENTER_PORT': mancenterPort])
+//        }
+//    }
+
+    if (project.hasProperty('main-class')) {
+        apply plugin: 'com.bmuschko.docker-remote-api'
+        apply plugin: 'spring-boot'
+
+        dependencyManagement {
+            imports {
+                // Last one wins if multiple bom declare the same dependency but with different versions
+                mavenBom "org.springframework.cloud:spring-cloud-starter-parent:${project['spring.cloud.parent.version']}"
+                mavenBom "org.springframework.cloud:spring-cloud-netflix:${project['spring.cloud.version']}"
+                mavenBom "org.springframework.cloud:spring-cloud-config:${project['spring.cloud.version']}"
+            }
+        }
+
+        dependencies {
+            compile 'org.springframework.cloud:spring-cloud-starter'
+            compile 'org.springframework.cloud:spring-cloud-starter-feign'
+
+            runtime 'org.springframework.cloud:spring-cloud-starter-config'
+            runtime 'org.springframework.cloud:spring-cloud-starter-eureka'
+            runtime 'org.springframework.cloud:spring-cloud-netflix-core'
+            runtime 'org.springframework.cloud:spring-cloud-starter-ribbon'
+
+            compile project(':commons')
+        }
+
+        springBoot {
+            mainClass = project['main-class']
+        }
+
+        bootRepackage {
+            mainClass = project['main-class']
+        }
+
+        bootRun {
+            def additionalProps = System.properties.findAll {
+                def key = it.key as String
+
+                def includePropNamesStartingWith = ['HAZELCAST_']
+                def includePropNamesEndingWith = ['_HOST', '_PORT', '_USERNAME', '_PASSWORD']
+                def includePropNamesEqualTo = ['spring.profiles.active', 'ENCRYPT_KEY']
+
+                includePropNamesStartingWith.find { key.startsWith(it) } ||
+                        includePropNamesEndingWith.find { key.endsWith(it) } ||
+                        includePropNamesEqualTo.find { it == key }
+            }
+
+            additionalProps ? println("Found additional properties in project ${project.name}: $additionalProps") : ''
+
+            systemProperties = System.env + additionalProps
+        }
+
+        docker {
+            if (System.env.DOCKER_HOST) {
+                url = "${System.env.DOCKER_HOST}".replace("tcp", "https")
+                if (System.env.DOCKER_CERT_PATH) {
+                    certPath = file(System.env.DOCKER_CERT_PATH)
+                }
+            } else {
+                url = 'unix:///var/run/docker.sock'
+            }
+        }
+
+        task buildDockerImage(type: DockerBuildImage, dependsOn: 'bootRepackage') {
+            inputDir = projectDir
+            tag = project['docker-tag']
+        }
+
+        task mayRequireEncryptKey << {
+            if (project.properties['require-encrypt-key'] && !System.properties['ENCRYPT_KEY']) {
+                throw new GradleException('Encrypt key must be provided.')
+            }
+        }
+
+        project.bootRun.dependsOn mayRequireEncryptKey
+    }
+}
