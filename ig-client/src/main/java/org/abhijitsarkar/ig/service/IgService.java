@@ -42,9 +42,8 @@ public class IgService {
 
     public final Mono<Media> callback(String code, String callbackUrl) {
         return Mono.just(accessTokenParams(code, callbackUrl))
-                .flatMap(params -> accessToken(igProperties.getAccessTokenUrl(), params))
-                .flatMap(token -> top(recentPostsUrl(token)))
-                .single();
+                .then(params -> accessToken(igProperties.getAccessTokenUrl(), params))
+                .then(token -> top(recentPostsUrl(token)));
     }
 
     private MultiValueMap<String, String> accessTokenParams(String code, String callbackUrl) {
