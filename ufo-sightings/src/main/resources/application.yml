@@ -1,0 +1,3 @@
+logging.level: WARN
+
+sighting.producer.fromYearMonth: 2017-01

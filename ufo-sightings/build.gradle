@@ -1,0 +1,45 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'org.springframework.boot'
+
+jar {
+    baseName = 'ufo-sightings'
+    version = '0.0.1-SNAPSHOT'
+}
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    // https://www.slf4j.org/codes.html#log4jDelegationLoop
+    runtime.exclude group: "org.slf4j", module: "slf4j-log4j12"
+    compile.exclude group: "org.slf4j", module: "slf4j-log4j12"
+}
+
+dependencies {
+    compile(
+            'org.springframework.kafka:spring-kafka',
+            'org.springframework.boot:spring-boot-starter',
+            "io.projectreactor:reactor-core:$reactorVersion",
+            "org.jsoup:jsoup:$jsoupVersion",
+            "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion",
+            "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
+    )
+    compileOnly("org.projectlombok:lombok:$lombokVersion")
+    testCompile(
+            'org.springframework.boot:spring-boot-starter-test',
+            "io.projectreactor.addons:reactor-test:$reactorVersion"
+    )
+}
