@@ -1,13 +1,13 @@
 package org.abhijitsarkar.ufo;
 
 import lombok.extern.slf4j.Slf4j;
-import org.abhijitsarkar.ufo.domain.ApplicationTerminationEvent;
 import org.abhijitsarkar.ufo.domain.CompletionEvent.ConsumerCompletedEvent;
 import org.abhijitsarkar.ufo.domain.CompletionEvent.ProducerCompletedEvent;
 import org.abhijitsarkar.ufo.domain.ConsumerProperties;
 import org.abhijitsarkar.ufo.service.PrettyPrinter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.boot.SpringApplication;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.EventListener;
 import org.springframework.kafka.listener.KafkaMessageListenerContainer;
 import org.springframework.stereotype.Component;
@@ -25,7 +25,7 @@ public class TheTerminator {
     @Autowired
     private ConsumerProperties consumerProperties;
     @Autowired
-    private ApplicationEventPublisher eventPublisher;
+    private ApplicationContext appCtx;
 
     private AtomicInteger counter;
 
@@ -59,7 +59,7 @@ public class TheTerminator {
             KafkaMessageListenerContainer listenerContainer =
                     (KafkaMessageListenerContainer) event.getListenerIdleEvent().getSource();
             listenerContainer.stop();
-            eventPublisher.publishEvent(new ApplicationTerminationEvent());
+            SpringApplication.exit(appCtx);
         }
     }
 }

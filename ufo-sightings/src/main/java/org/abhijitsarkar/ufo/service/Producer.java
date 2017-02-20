@@ -9,9 +9,8 @@ import org.abhijitsarkar.ufo.repository.Crawler;
 import org.abhijitsarkar.ufo.repository.ListenableToCompletableFutureAdapter;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.event.EventListener;
 import org.springframework.kafka.core.KafkaOperations;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -33,7 +32,7 @@ import static java.time.temporal.ChronoUnit.MONTHS;
  */
 @RequiredArgsConstructor
 @Slf4j
-public class Producer {
+public class Producer implements CommandLineRunner {
     private static final int BATCH_SIZE = 12;
     private static final int CONCURRENCY = Runtime.getRuntime().availableProcessors() * 2;
 
@@ -43,11 +42,6 @@ public class Producer {
 
     @Autowired
     private ApplicationEventPublisher eventPublisher;
-
-    @EventListener
-    public void doAtStartup(ApplicationReadyEvent event) {
-        run();
-    }
 
     Flux<Sighting> getSightings() {
         YearMonth from = producerProperties.getFromYearMonth();
@@ -107,7 +101,8 @@ public class Producer {
         }
     }
 
-    public void run() {
+    @Override
+    public void run(String... args) {
         getSightings()
                 .map(kafkaTemplate::sendDefault)
                 .map(ListenableToCompletableFutureAdapter::new)

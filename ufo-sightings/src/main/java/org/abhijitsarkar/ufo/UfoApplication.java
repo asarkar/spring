@@ -1,6 +1,5 @@
 package org.abhijitsarkar.ufo;
 
-import org.abhijitsarkar.ufo.domain.ApplicationTerminationEvent;
 import org.abhijitsarkar.ufo.domain.ConsumerProperties;
 import org.abhijitsarkar.ufo.domain.KafkaProperties;
 import org.abhijitsarkar.ufo.domain.ProducerProperties;
@@ -14,11 +13,10 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
@@ -42,7 +40,6 @@ import static org.springframework.kafka.listener.AbstractMessageListenerContaine
 @EnableKafka
 public class UfoApplication {
     private static final CountDownLatch shutdownLatch = new CountDownLatch(1);
-    private static ConfigurableApplicationContext appCtx;
 
     @Autowired
     private KafkaProperties kafkaProperties;
@@ -52,7 +49,7 @@ public class UfoApplication {
     private ConsumerProperties consumerProperties;
 
     public static void main(String[] args) throws InterruptedException {
-        appCtx = new SpringApplicationBuilder(UfoApplication.class)
+        new SpringApplicationBuilder(UfoApplication.class)
                 .web(false)
                 .run(args);
 
@@ -60,8 +57,7 @@ public class UfoApplication {
     }
 
     @EventListener
-    public void listenToApplicationTerminationEvent(ApplicationTerminationEvent event) {
-        SpringApplication.exit(appCtx);
+    public void listenToContextClosedEvent(ContextClosedEvent event) {
         shutdownLatch.countDown();
     }
 
