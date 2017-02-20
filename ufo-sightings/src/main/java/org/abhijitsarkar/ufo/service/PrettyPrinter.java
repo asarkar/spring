@@ -1,7 +1,5 @@
 package org.abhijitsarkar.ufo.service;
 
-import reactor.core.publisher.Flux;
-
 import java.util.Map;
 
 import static java.util.Map.Entry.comparingByKey;
@@ -18,13 +16,10 @@ public class PrettyPrinter {
         System.out.format("+--------------+----------+%n");
 
         if (map != null) {
-            Flux.fromIterable(map.entrySet())
-                    .sort(comparingByKey())
-                    .zipWith(Flux.range(1, Integer.MAX_VALUE))
-                    .subscribe(t -> {
-                        Map.Entry<String, Integer> e = t.getT1();
-                        System.out.format(FORMAT, e.getKey(), e.getValue());
-                    });
+            map.entrySet()
+                    .stream()
+                    .sorted(comparingByKey())
+                    .forEach(e -> System.out.format(FORMAT, e.getKey(), e.getValue()));
         }
 
         System.out.format("+--------------+----------+%n");
