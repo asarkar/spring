@@ -3,7 +3,7 @@ The producer gets UFO sightings data (yup!) from [The National UFO Reporting Cen
 
 The consumer reads from Kafka in batches and gathers analytics like number of sightings per state, per month, per year, per shape and holds the data in memory. 3 consumers run in parallel reading from the same topic/broker.
 
-The app detects when the consumers are idle (thus, most likely done) and sends out notifications. After receiving notifications from the producer and all consumers, the analytics is printed to console and the app is terminated (I like how this is done using events :)).
+The app detects when the consumers are idle (thus, most likely done) and sends out notifications. After receiving notifications from the producer and all consumers, the analytics is printed to console and the app is terminated (I like how this is done using events :smile:).
 
 ### Open Questions
 
