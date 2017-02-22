@@ -1,5 +1,5 @@
 # Summary
-The producer gets UFO sightings (yup!) data from: http://www.nuforc.org/webreports.html, does some basic clean up, and inserts into Kafka. Each year is processed on a separate thread, so multiple years may be processed in parallel (up to a predefined maximum concurrency). The producer sends out a notification when done.
+The producer gets UFO sightings data (yup!) from [The National UFO Reporting Center Online Database](http://www.nuforc.org/webreports.html) (there's such a thing), does some basic clean up, and inserts into Kafka. Each year is processed on a separate thread, so multiple years may be processed in parallel (up to a predefined maximum concurrency). The producer sends out a notification when done.
 
 The consumer reads from Kafka in batches and gathers analytics like number of sightings per state, per month, per year, per shape and holds the data in memory. 3 consumers run in parallel reading from the same topic/broker.
 
