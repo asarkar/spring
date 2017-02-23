@@ -6,6 +6,8 @@ import org.springframework.stereotype.Component;
 
 import java.time.YearMonth;
 
+import static java.time.Month.JANUARY;
+
 /**
  * @author Abhijit Sarkar
  */
@@ -20,7 +22,7 @@ public class ProducerProperties {
     private String toYearMonth;
 
     public YearMonth getFromYearMonth() {
-        return fromYearMonth == null ? YearMonth.now() : YearMonth.parse(fromYearMonth);
+        return fromYearMonth == null ? YearMonth.now().withMonth(JANUARY.getValue()) : YearMonth.parse(fromYearMonth);
     }
 
     public YearMonth getToYearMonth() {
