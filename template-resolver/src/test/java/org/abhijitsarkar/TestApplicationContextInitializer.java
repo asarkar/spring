@@ -21,7 +21,7 @@ public interface TestApplicationContextInitializer extends ApplicationContextIni
             File test = new File(getClass().getResource("/").toURI());
             File resources = new File(test.getParentFile().getParentFile().getParent(), "src/test/resources");
             props.put("templates.baseUri", getBaseUri(resources));
-            props.put("template.names", "nginx-svc");
+            props.put("template.names", "nginx-app");
             MapPropertySource mapPropertySource = new MapPropertySource("test-props", props);
             appCtx.getEnvironment().getPropertySources().addFirst(mapPropertySource);
         } catch (URISyntaxException e) {
