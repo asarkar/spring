@@ -14,7 +14,10 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Map;
 
+import static java.util.stream.Collectors.counting;
+import static java.util.stream.Collectors.groupingBy;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
@@ -31,7 +34,7 @@ public class NativeTemplateResolverTest {
     private TemplateResolverService templateResolverSvc;
 
     static {
-        System.setProperty("rc.name", "test");
+        System.setProperty("rc.name", "testNative");
     }
 
     @Test
@@ -44,12 +47,13 @@ public class NativeTemplateResolverTest {
         Path out = Paths.get(projectDir, "build", "native.yaml");
         assertThat(Files.exists(out), is(true));
 
-        long count = Files.lines(out)
+        Map<String, Long> map = Files.lines(out)
                 .map(String::trim)
-                .filter(line -> line.equalsIgnoreCase("name: test")
-                        || line.equalsIgnoreCase("app: test"))
-                .count();
+                .filter(line -> line.endsWith(": test")
+                        || line.endsWith(": testNative"))
+                .collect(groupingBy(line -> line.split(": ")[1], counting()));
 
-        assertThat(count, is(3L));
+        assertThat(map.get("test"), is(2L));
+        assertThat(map.get("testNative"), is(1L));
     }
 }

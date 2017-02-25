@@ -128,9 +128,7 @@ public class ThymeleafConfig {
         // Keeping profile-specific files in mind
         return filename.startsWith("application")
                 || names.stream()
-                .filter(stripped::startsWith)
-                .findAny()
-                .isPresent();
+                .anyMatch(stripped::startsWith);
     }
 
     private static boolean isYaml(String filename) {

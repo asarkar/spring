@@ -31,7 +31,7 @@ public class TemplateResolverService {
                     try {
                         return templateEngine.process(template, context);
                     } catch (RuntimeException e) {
-                        log.warn("Failed to process template: {}.", template);
+                        log.warn("Failed to process template: {}.", template, e);
                         return "";
                     }
                 })
