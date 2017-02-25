@@ -1,2 +1,2 @@
-app:
-  name: test
+app.name: &appName test
+svc.name: *appName

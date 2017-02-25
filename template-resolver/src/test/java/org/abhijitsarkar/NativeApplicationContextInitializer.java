@@ -10,4 +10,9 @@ public class NativeApplicationContextInitializer implements TestApplicationConte
     public String getBaseUri(File resources) {
         return resources.getAbsolutePath();
     }
+
+    @Override
+    public String getOutput() {
+        return "native.yaml";
+    }
 }

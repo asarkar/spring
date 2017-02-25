@@ -10,4 +10,9 @@ public class GitAwareApplicationContextInitializer implements TestApplicationCon
     public String getBaseUri(File resources) {
         return resources.toURI().toString();
     }
+
+    @Override
+    public String getOutput() {
+        return "git.yaml";
+    }
 }

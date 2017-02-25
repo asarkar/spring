@@ -21,9 +21,9 @@ public interface TestApplicationContextInitializer extends ApplicationContextIni
             File test = new File(getClass().getResource("/").toURI());
             String projectDir = test.getParentFile().getParentFile().getParent();
             File resources = new File(projectDir, "src/test/resources");
-            props.put("templates.baseUri", getBaseUri(resources));
-            props.put("template.names", "nginx-app");
-            props.put("template.output", new File(projectDir, "build/nginx-app.yaml"));
+            props.put("template.baseUri", getBaseUri(resources));
+            props.put("template.names", "nginx");
+            props.put("template.output", new File(projectDir, "build/" + getOutput()));
             MapPropertySource mapPropertySource = new MapPropertySource("test-props", props);
             appCtx.getEnvironment().getPropertySources().addFirst(mapPropertySource);
         } catch (URISyntaxException e) {
@@ -32,4 +32,6 @@ public interface TestApplicationContextInitializer extends ApplicationContextIni
     }
 
     String getBaseUri(File resources);
+
+    String getOutput();
 }

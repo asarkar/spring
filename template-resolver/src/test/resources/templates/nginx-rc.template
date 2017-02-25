@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ReplicationController
 metadata:
-  name: [[${app.name}]]
+  name: [[#{rc.name}]]
 spec:
   replicas: 1
   template:

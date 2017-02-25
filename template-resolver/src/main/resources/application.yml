@@ -1,5 +1,5 @@
 spring.application.name: template-resolver
-templates.baseUri: ${BASE_URI}
+template.baseUri: ${BASE_URI}
 logging.level.org.springframework: ERROR
 logging.level.org.abhijitsarkar: ERROR
 spring:
@@ -7,5 +7,5 @@ spring:
     banner-mode: "off"
 ---
 spring.profiles: default
-#templates.git.localRepoPath: ${LOCAL_REPO}
+template.git.localRepoPath: ${LOCAL_REPO:}
 

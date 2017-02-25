@@ -11,8 +11,6 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
 
 import static java.nio.file.Files.deleteIfExists;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -28,36 +26,33 @@ import static org.mockito.Mockito.when;
 public class TemplateResolverServiceTest {
     private Path out;
     private ITemplateEngine templateEngine;
-    String projectDir;
+    private String projectDir;
     private TemplateResolverService service;
+    private TemplateProperties templateProperties;
 
     @Before
     public void before() throws URISyntaxException {
         templateEngine = mock(ITemplateEngine.class);
+        templateProperties = new TemplateProperties();
 
-        Map<String, Object> properties = new HashMap<>();
-        Map<String, Object> properties2 = new HashMap<>();
-        properties2.put("name", "test");
-        properties.put("app", properties2);
-
-        service = new TemplateResolverService(templateEngine, properties);
+        service = new TemplateResolverService(templateEngine, templateProperties);
 
         File test = new File(getClass().getResource("/").toURI());
         projectDir = test.getParentFile().getParentFile().getParent();
-        out = Paths.get(projectDir, "build", "nginx-app.yaml");
-        service.output = out.toFile().getAbsolutePath();
+        out = Paths.get(projectDir, "build", "nginx.yaml");
+        templateProperties.setOutput(out.toFile().getAbsolutePath());
     }
 
     @Test
     public void testResolvesSingleExistingTemplate() throws IOException {
-        service.names = "whatever";
+        templateProperties.setNames("whatever");
 
         when(templateEngine.process(eq("whatever"), any(Context.class)))
                 .thenReturn("success");
 
         service.resolve();
 
-        Path out = Paths.get(projectDir, "build", "nginx-app.yaml");
+        Path out = Paths.get(projectDir, "build", "nginx.yaml");
         assertThat(Files.exists(out), is(true));
 
         boolean isPresent = Files.lines(out)
@@ -71,11 +66,11 @@ public class TemplateResolverServiceTest {
 
     @Test
     public void testHandlesNonExistingTemplate() throws IOException {
-        service.names = "whatever";
+        templateProperties.setNames("whatever");
 
         when(templateEngine.process(eq("whatever"), any(Context.class)))
                 .thenThrow(new RuntimeException("test"));
-        Path out = Paths.get(projectDir, "build", "nginx-app.yaml");
+        Path out = Paths.get(projectDir, "build", "nginx.yaml");
         deleteIfExists(out);
 
         service.resolve();
@@ -85,14 +80,14 @@ public class TemplateResolverServiceTest {
 
     @Test
     public void testHandlesExistingAndNonExistingTemplate() throws IOException {
-        service.names = "a, b";
+        templateProperties.setNames("a, b");
 
         when(templateEngine.process(eq("a"), any(Context.class)))
                 .thenReturn("success");
         when(templateEngine.process(eq("b"), any(Context.class)))
                 .thenThrow(new RuntimeException("test"));
 
-        Path out = Paths.get(projectDir, "build", "nginx-app.yaml");
+        Path out = Paths.get(projectDir, "build", "nginx.yaml");
         deleteIfExists(out);
 
         service.resolve();

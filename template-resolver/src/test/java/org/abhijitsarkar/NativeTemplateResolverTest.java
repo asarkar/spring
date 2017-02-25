@@ -30,12 +30,18 @@ public class NativeTemplateResolverTest {
     @Autowired
     private TemplateResolverService templateResolverSvc;
 
+    static {
+        System.setProperty("rc.name", "test");
+    }
+
     @Test
     public void testResolves() throws URISyntaxException, IOException {
+        templateResolverSvc.resolve();
+
         File test = new File(getClass().getResource("/").toURI());
         String projectDir = test.getParentFile().getParentFile().getParent();
 
-        Path out = Paths.get(projectDir, "build", "nginx-app.yaml");
+        Path out = Paths.get(projectDir, "build", "native.yaml");
         assertThat(Files.exists(out), is(true));
 
         long count = Files.lines(out)
