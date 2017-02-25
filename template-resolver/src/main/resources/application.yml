@@ -1,7 +1,0 @@
-spring.application.name: template-resolver
-templates.baseUri: ${BASE_URI}
-logging.level: DEBUG
----
-spring.profiles: default
-#templates.git.localRepoPath: ${LOCAL_REPO}
-
