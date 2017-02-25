@@ -1,0 +1,3 @@
+[# th:insert="nginx-svc"/]
+---
+[# th:insert="nginx-rc"/]
