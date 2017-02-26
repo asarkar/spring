@@ -3,6 +3,7 @@ Thymeleaf templating with non-web Spring Boot.
 
 ## Placeholder resolution
 Resolves placeholders from one or more of the following sources, in decreasing order of priority:
+
 1. System properties (JVM parameters).
 2. Environment variables.
 3. YAML files that start with the template name, or if named `application.yml` (from Git or local).
