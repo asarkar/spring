@@ -1,6 +1,7 @@
 package org.abhijitsarkar;
 
 import lombok.RequiredArgsConstructor;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.thymeleaf.ITemplateEngine;
 import org.thymeleaf.context.Context;
@@ -20,7 +21,9 @@ import static java.nio.file.Files.write;
 @RequiredArgsConstructor
 @Slf4j
 public class TemplateResolverService {
+    @NonNull
     private final ITemplateEngine templateEngine;
+    @NonNull
     private final TemplateProperties templateProperties;
 
     public void resolve() throws IOException {
