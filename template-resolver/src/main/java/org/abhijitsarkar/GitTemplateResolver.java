@@ -21,6 +21,7 @@ import static java.nio.file.Files.deleteIfExists;
 public class GitTemplateResolver extends FileTemplateResolver {
     @NonNull
     private final String baseUri;
+    @NonNull
     private final String localRepoPath;
 
     @PostConstruct
