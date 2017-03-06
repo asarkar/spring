@@ -1,5 +1,8 @@
 package org.abhijitsarkar.ufo.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.abhijitsarkar.ufo.domain.CompletionEvent.ConsumerCompletedEvent;
@@ -11,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import reactor.util.function.Tuples;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -31,9 +35,20 @@ public class Consumer {
         return unmodifiableMap(analytics);
     }
 
+    private final ObjectWriter writer = new ObjectMapper()
+            .registerModule(new JavaTimeModule())
+            .writerFor(Sighting.class);
+
     @KafkaListener(id = "ufo", topics = "ufo", containerFactory = "ufoContainerFactory")
     public void listen(List<Sighting> sightings) {
         sightings.stream()
+                .peek(s -> {
+                    try {
+                        log.info(writer.writeValueAsString(s));
+                    } catch (IOException e) {
+                        // Couldn't log, no biggie
+                    }
+                })
                 .map(s -> {
                     String state = toUpperCaseOrUnknown(s.getState());
                     String shape = toUpperCaseOrUnknown(s.getShape());

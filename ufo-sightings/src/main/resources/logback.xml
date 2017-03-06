@@ -7,6 +7,13 @@
             <pattern>%date{"yyyy-MM-dd HH:mm:ss.SSS", EST} [%thread] [%-5level] %logger{3} - %msg%n</pattern>
         </encoder>
     </appender>
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <file>sightings.log</file>
+        <append>true</append>
+        <encoder>
+            <pattern>%msg%n</pattern>
+        </encoder>
+    </appender>
 
     <root level="WARN">
         <appender-ref ref="STDOUT"/>
@@ -14,6 +21,9 @@
 
     <logger name="org.abhijitsarkar" level="INFO" additivity="false">
         <appender-ref ref="STDOUT"/>
+    </logger>
+    <logger name="org.abhijitsarkar.ufo.service.Consumer" level="INFO" additivity="false">
+        <appender-ref ref="FILE"/>
     </logger>
 
 </configuration>
