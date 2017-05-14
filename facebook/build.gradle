@@ -1,0 +1,41 @@
+buildscript {
+    ext {
+        springBootVersion = "1.5.3.RELEASE"
+    }
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
+}
+
+apply plugin: "java"
+apply plugin: "org.springframework.boot"
+
+version = "0.0.1-SNAPSHOT"
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+
+dependencies {
+    compileOnly("org.projectlombok:lombok:1.16.16")
+    compile(
+            "org.springframework.boot:spring-boot-starter-social-facebook",
+            "org.slf4j:slf4j-api:1.7.25"
+    )
+    runtime(
+            "org.springframework.boot:spring-boot-starter-thymeleaf",
+            "ch.qos.logback:logback-classic:1.2.2",
+            "ch.qos.logback:logback-core:1.2.2",
+    )
+    testCompile(
+            "org.springframework.boot:spring-boot-starter-test",
+            "org.junit.jupiter:junit-jupiter-api:5.0.0-M4"
+    )
+    testRuntime("org.junit.jupiter:junit-jupiter-engine:5.0.0-M4")
+}
+
