@@ -1,0 +1,12 @@
+joke-service.ribbon:
+    eureka.enabled: false
+    listOfServers: api.icndb.com
+feign:
+  hystrix.enabled: true
+  okhttp.enabled: true
+  httpclient.enabled: false
+hystrix.command.JokeServiceClient#tellAJoke():
+  execution.isolation.thread.timeoutInMilliseconds: 3000
+  fallback.enabled: false
+
+coolHttp.readTimeoutMillis: 3000

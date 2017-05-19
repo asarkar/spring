@@ -1,0 +1,46 @@
+plugins {
+    id "io.spring.dependency-management" version "1.0.2.RELEASE"
+}
+
+apply plugin: "java"
+apply plugin: "idea"
+
+version = "0.0.1-SNAPSHOT"
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compileOnly("org.projectlombok:lombok:$lombokVersion")
+    compile(
+            "org.springframework.cloud:spring-cloud-starter-feign",
+            "org.springframework.cloud:spring-cloud-starter-hystrix",
+            "com.fasterxml.jackson.datatype:jackson-datatype-jdk8",
+            "com.squareup.okhttp3:okhttp:$okhttpVersion",
+            "org.slf4j:slf4j-api:$slf4jVersion"
+    )
+    runtime(
+            "org.springframework.cloud:spring-cloud-starter-ribbon",
+            "ch.qos.logback:logback-classic:$logbackVersion",
+            "ch.qos.logback:logback-core:$logbackVersion"
+    )
+    testCompile(
+            "org.springframework.boot:spring-boot-starter-test",
+            "com.github.tomakehurst:wiremock-standalone:$wiremockVersion"
+    )
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:$springCloudVersion"
+        mavenBom "org.springframework.boot:spring-boot-dependencies:$springBootVersion"
+    }
+}
+
+configurations.all {
+    resolutionStrategy {
+        force "ch.qos.logback:logback-classic:$logbackVersion"
+    }
+}
