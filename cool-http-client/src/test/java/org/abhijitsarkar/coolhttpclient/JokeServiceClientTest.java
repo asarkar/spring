@@ -33,7 +33,7 @@ import static org.springframework.util.StreamUtils.copyToByteArray;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE,
         properties = {
-                "joke-service.ribbon.listOfServers=localhost:9999"
+                "joke-service.ribbon.listOfServers=localhost:11111"
         })
 @DirtiesContext // adds properties, tell Spring not to cache context
 public class JokeServiceClientTest {
@@ -41,7 +41,7 @@ public class JokeServiceClientTest {
     private JokeServiceClient client;
 
     @Rule
-    public WireMockRule server = new WireMockRule(9999);
+    public WireMockRule server = new WireMockRule(11111);
 
     @Test
     public void testLive() {
@@ -88,7 +88,7 @@ public class JokeServiceClientTest {
                         .withBody(copyToByteArray(getClass().getResourceAsStream("/joke.json")))));
 
         TestSubscriber<JokeServiceResponse> subscriber = new TestSubscriber<>();
-        // https://stackoverflow.com/questions/44061811/rxjava-why-cant-i-test-retrywhen-using-testscheduler
+        // TestScheduler virtual time doesn't work if a real wait (WireMock) is involved
 //        TestScheduler scheduler = new TestScheduler();
         // GOTCHA ALERT: must use defer for the Observable to be reevaluated
         Observable.defer(() -> client.tellAJoke()
@@ -96,10 +96,6 @@ public class JokeServiceClientTest {
                 .retryWhen(errors -> onErrorTryAgain(errors, Schedulers.computation()))
                 .subscribe(subscriber);
 
-//        scheduler.advanceTimeBy(2, TimeUnit.SECONDS);
-//        subscriber.assertNoValues();
-//        scheduler.advanceTimeBy(4, TimeUnit.SECONDS);
-//        subscriber.assertNoValues();
         subscriber.awaitTerminalEvent(10, TimeUnit.SECONDS);
         subscriber.assertNoErrors();
         assertThat(subscriber.getOnNextEvents())

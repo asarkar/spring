@@ -27,15 +27,15 @@ import static org.springframework.util.StreamUtils.copyToByteArray;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE,
         properties = {
-                "joke-service.ribbon.listOfServers=localhost:7777,localhost:8888"
+                "joke-service.ribbon.listOfServers=localhost:11111,localhost:11112"
         })
 @DirtiesContext // adds properties, tell Spring not to cache context
 public class JokeServiceClientLoadBalancingTest {
     @Rule
-    public WireMockRule goodServer = new WireMockRule(7777);
+    public WireMockRule goodServer = new WireMockRule(11111);
 
     @Rule
-    public WireMockRule badServer = new WireMockRule(8888);
+    public WireMockRule badServer = new WireMockRule(11112);
 
     @Autowired
     private JokeServiceClient client;
