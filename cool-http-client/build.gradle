@@ -18,6 +18,7 @@ dependencies {
             "org.springframework.cloud:spring-cloud-starter-feign",
             "org.springframework.cloud:spring-cloud-starter-hystrix",
             "com.fasterxml.jackson.datatype:jackson-datatype-jdk8",
+            "io.github.openfeign:feign-okhttp:$feignVersion",
             "com.squareup.okhttp3:okhttp:$okhttpVersion",
             "org.slf4j:slf4j-api:$slf4jVersion"
     )
