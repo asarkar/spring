@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import rx.Observable;
 import rx.Scheduler;
@@ -34,6 +35,7 @@ import static org.springframework.util.StreamUtils.copyToByteArray;
         properties = {
                 "joke-service.ribbon.listOfServers=localhost:9999"
         })
+@DirtiesContext // adds properties, tell Spring not to cache context
 public class JokeServiceClientTest {
     @Autowired
     private JokeServiceClient client;
