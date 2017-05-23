@@ -8,5 +8,3 @@ feign:
 hystrix.command.JokeServiceClient#tellAJoke():
   execution.isolation.thread.timeoutInMilliseconds: 3000
   fallback.enabled: false
-
-coolHttp.readTimeoutMillis: 3000

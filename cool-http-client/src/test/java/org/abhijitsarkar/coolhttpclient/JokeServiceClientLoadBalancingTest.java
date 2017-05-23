@@ -1,5 +1,6 @@
 package org.abhijitsarkar.coolhttpclient;
 
+import com.github.tomakehurst.wiremock.common.ConsoleNotifier;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.github.tomakehurst.wiremock.verification.VerificationResult;
 import org.assertj.core.api.Condition;
@@ -15,11 +16,12 @@ import rx.Observable;
 import java.io.IOException;
 import java.util.List;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.badRequest;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.ok;
+import static com.github.tomakehurst.wiremock.client.WireMock.serviceUnavailable;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static org.abhijitsarkar.coolhttpclient.JokeServiceClient.RANDOM_JOKE_URI;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.util.StreamUtils.copyToByteArray;
@@ -32,10 +34,10 @@ import static org.springframework.util.StreamUtils.copyToByteArray;
 @DirtiesContext // adds properties, tell Spring not to cache context
 public class JokeServiceClientLoadBalancingTest {
     @Rule
-    public WireMockRule goodServer = new WireMockRule(11111);
+    public WireMockRule goodServer = new WireMockRule(options().port(11111).notifier(new ConsoleNotifier(true)));
 
     @Rule
-    public WireMockRule badServer = new WireMockRule(11112);
+    public WireMockRule badServer = new WireMockRule(options().port(11112).notifier(new ConsoleNotifier(true)));
 
     @Autowired
     private JokeServiceClient client;
@@ -43,7 +45,7 @@ public class JokeServiceClientLoadBalancingTest {
     @Test
     public void testLoadBalancing() throws IOException {
         badServer.stubFor(get(urlPathEqualTo(RANDOM_JOKE_URI))
-                .willReturn(badRequest()));
+                .willReturn(serviceUnavailable()));
         goodServer.stubFor(get(urlPathEqualTo(RANDOM_JOKE_URI))
                 .willReturn(ok()
                         .withHeader("Content-Type", "application/json")

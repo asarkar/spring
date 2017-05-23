@@ -29,7 +29,9 @@ dependencies {
     )
     testCompile(
             "org.springframework.boot:spring-boot-starter-test",
-            "com.github.tomakehurst:wiremock-standalone:$wiremockVersion"
+            "com.github.tomakehurst:wiremock-standalone:$wiremockVersion",
+            "org.springframework.retry:spring-retry:$springRetryVersion",
+            "org.assertj:assertj-core:$assertjVersion"
     )
 }
 
