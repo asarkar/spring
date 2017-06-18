@@ -1,0 +1,1 @@
+spring.profiles.active: inbound-default, outbound-default

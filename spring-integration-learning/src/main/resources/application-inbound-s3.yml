@@ -1,0 +1,5 @@
+inbound.s3:
+  accessKey: accessKey
+  secretKey: secretKey
+  region: us-east-1
+  bucket: abc/def/

@@ -1,0 +1,52 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        maven { url "${springMilestoneRepoUrl}" }
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
+}
+
+apply plugin: "java"
+apply plugin: "eclipse"
+apply plugin: "org.springframework.boot"
+apply plugin: "io.spring.dependency-management"
+
+version = "0.0.1-SNAPSHOT"
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    maven { url "${springMilestoneRepoUrl}" }
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.integration:spring-integration-bom:${springIntegrationVersion}"
+    }
+}
+
+dependencies {
+    compile(
+            "org.springframework.boot:spring-boot-starter",
+            "org.springframework.integration:spring-integration-core",
+            "org.springframework.integration:spring-integration-file",
+            "org.springframework.integration:spring-integration-http",
+            "org.springframework.integration:spring-integration-stream",
+            "org.springframework.integration:spring-integration-aws:${springIntegrationAwsVersion}"
+    )
+    compileOnly("org.projectlombok:lombok:${lombokVersion}")
+    runtime(
+            "org.slf4j:slf4j-api:$slf4jVersion",
+            "ch.qos.logback:logback-classic:$logbackVersion",
+            "ch.qos.logback:logback-core:$logbackVersion",
+            "org.springframework.retry:spring-retry"
+    )
+    testCompile(
+            "org.springframework.boot:spring-boot-starter-test",
+            "org.springframework.integration:spring-integration-test",
+            "org.assertj:assertj-core",
+            "org.projectlombok:lombok:${lombokVersion}"
+    )
+}

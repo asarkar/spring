@@ -1,0 +1,1 @@
+[Spring Integration Adapters, Gateways, and Channels](http://joshlong.com/jl/blogPost/spring_integration_adapters_gateways_and_channels.html)
