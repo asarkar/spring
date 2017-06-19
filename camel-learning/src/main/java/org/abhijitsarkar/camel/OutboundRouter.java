@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.stream.Collectors.joining;
+import static org.abhijitsarkar.camel.Application.DEFAULT_PROFILE;
+import static org.abhijitsarkar.camel.Application.OUTBOUND_HTTP_PROFILE;
 
 /**
  * @author Abhijit Sarkar
@@ -22,6 +24,8 @@ import static java.util.stream.Collectors.joining;
 @Component
 @Slf4j
 public class OutboundRouter {
+    private static final String OUTBOUND_PROFILES_INVOKED = "invoked";
+
     @Autowired(required = false)
     private HttpProperties httpProperties;
 
@@ -31,10 +35,10 @@ public class OutboundRouter {
     public String findRoute(@ExchangeProperties Map<String, Object> properties) {
         List<String> activeProfiles = Arrays.asList(env.getActiveProfiles());
         // Get the state from the exchange properties
-        List<String> invoked = (List<String>) properties.getOrDefault("invoked", new ArrayList<>());
+        List<String> invoked = (List<String>) properties.getOrDefault(OUTBOUND_PROFILES_INVOKED, new ArrayList<>());
         List<String> routes = new ArrayList<>();
 
-        if (activeProfiles.contains("outbound-http") && !invoked.contains("outbound-http")) {
+        if (activeProfiles.contains(OUTBOUND_HTTP_PROFILE) && !invoked.contains(OUTBOUND_HTTP_PROFILE)) {
             Assert.notNull(httpProperties, "HttpProperties must not be null.");
 
             String outboundHttpUri = UriComponentsBuilder.fromUriString("http4://notused")
@@ -44,11 +48,11 @@ public class OutboundRouter {
                     .build()
                     .toUriString();
 
-            invoked.add("outbound-http");
+            invoked.add(OUTBOUND_HTTP_PROFILE);
             routes.add(outboundHttpUri);
         }
 
-        if (activeProfiles.contains("default") && !invoked.contains("default")) {
+        if (activeProfiles.contains(DEFAULT_PROFILE) && !invoked.contains(DEFAULT_PROFILE)) {
             String outboundFileUri = UriComponentsBuilder.fromUriString("file://build")
                     .queryParam("autoCreate", true)
                     .queryParam("eagerDeleteTargetFile", true)
@@ -56,12 +60,12 @@ public class OutboundRouter {
                     .build()
                     .toUriString();
 
-            invoked.add("default");
+            invoked.add(DEFAULT_PROFILE);
             routes.add(outboundFileUri);
         }
 
         // Store the state back on the properties
-        properties.put("invoked", invoked);
+        properties.put(OUTBOUND_PROFILES_INVOKED, invoked);
 
         log.info("Routes found: {}.", routes);
 

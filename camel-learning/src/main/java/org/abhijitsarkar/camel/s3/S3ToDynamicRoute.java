@@ -1,9 +1,9 @@
 package org.abhijitsarkar.camel.s3;
 
+import lombok.RequiredArgsConstructor;
 import org.abhijitsarkar.camel.FilenameHeaderMessageProcessor;
 import org.abhijitsarkar.camel.OutboundRouter;
 import org.abhijitsarkar.camel.http.HttpHeadersMessageProcessor;
-import org.abhijitsarkar.camel.http.HttpProperties;
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
@@ -17,17 +17,17 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.annotation.PostConstruct;
 
+import static org.abhijitsarkar.camel.Application.INBOUND_S3_PROFILE;
+
 /**
  * @author Abhijit Sarkar
  */
 @Component
-@Profile({"inbound-s3"})
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@Profile(INBOUND_S3_PROFILE)
 public class S3ToDynamicRoute extends RouteBuilder {
-    @Autowired
-    private S3Properties s3Properties;
-
-    @Autowired(required = false)
-    private HttpProperties httpProperties;
+    private final S3Properties s3Properties;
+    private final HttpHeadersMessageProcessor httpHeadersMessageProcessor;
 
     @Value("${inbound.timer.period:5000}")
     private long inboundTimerDelay;
@@ -56,7 +56,7 @@ public class S3ToDynamicRoute extends RouteBuilder {
                 new S3LastModifiedFilter(s3Properties.getLastModifiedWithinSeconds(), s3Properties.getPrefix());
 
         interceptSendToEndpoint("http4://*")
-                .process(new HttpHeadersMessageProcessor(httpProperties));
+                .process(httpHeadersMessageProcessor);
 
         from(inboundS3Uri)
                 .filter().method(lastModifiedFilter, "accept")
@@ -67,6 +67,6 @@ public class S3ToDynamicRoute extends RouteBuilder {
 //                .convertBodyTo(byte[].class)
                 .process(new FilenameHeaderMessageProcessor())
                 .log(LoggingLevel.INFO, log.getName(), "Processing [${header." + Exchange.FILE_NAME + "}]")
-                .dynamicRouter().method(OutboundRouter.class, "findRoute");
+                .dynamicRouter().method(OutboundRouter.class);
     }
 }

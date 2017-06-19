@@ -1,11 +1,12 @@
 package org.abhijitsarkar.camel.http;
 
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.commons.codec.binary.Base64;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.Map;
@@ -20,9 +21,9 @@ import static org.apache.http.HttpHeaders.AUTHORIZATION;
  * @author Abhijit Sarkar
  */
 @Slf4j
-@RequiredArgsConstructor
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@Component
 public class HttpHeadersMessageProcessor implements org.apache.camel.Processor {
-    @NonNull
     private final HttpProperties httpProperties;
 
     @Override

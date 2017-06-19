@@ -17,6 +17,10 @@ import java.util.function.Supplier;
  */
 @SpringBootApplication
 public class Application {
+    public static final String DEFAULT_PROFILE = "default";
+    public static final String OUTBOUND_HTTP_PROFILE = "outbound-http";
+    public static final String INBOUND_S3_PROFILE = "inbound-s3";
+
     public static void main(String[] args) {
         ApplicationContext applicationContext = new SpringApplicationBuilder(Application.class)
                 .web(false)
@@ -28,7 +32,7 @@ public class Application {
     }
 
     @Bean
-    @Profile("default")
+    @Profile(DEFAULT_PROFILE)
     Supplier<OutputStream> streamConsumer() {
         return new ByteArrayOutputStreamConsumer();
     }

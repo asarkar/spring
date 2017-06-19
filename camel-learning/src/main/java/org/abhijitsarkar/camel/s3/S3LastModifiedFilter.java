@@ -3,7 +3,6 @@ package org.abhijitsarkar.camel.s3;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.Header;
-import org.apache.camel.component.aws.s3.S3Constants;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -12,6 +11,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME;
+import static org.apache.camel.component.aws.s3.S3Constants.KEY;
+import static org.apache.camel.component.aws.s3.S3Constants.LAST_MODIFIED;
 
 /**
  * @author Abhijit Sarkar
@@ -24,7 +25,7 @@ public class S3LastModifiedFilter {
     private final long lastModifiedWithinSeconds;
     private final String prefix;
 
-    public boolean accept(@Header(S3Constants.KEY) String key, @Header(S3Constants.LAST_MODIFIED) Date lastModified) {
+    public boolean accept(@Header(KEY) String key, @Header(LAST_MODIFIED) Date lastModified) {
         if (key.equals(prefix)) {
             return false;
         }

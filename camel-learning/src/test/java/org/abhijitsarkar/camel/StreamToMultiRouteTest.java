@@ -28,6 +28,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.abhijitsarkar.camel.Application.DEFAULT_PROFILE;
+import static org.abhijitsarkar.camel.Application.OUTBOUND_HTTP_PROFILE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
@@ -45,7 +47,7 @@ import static org.springframework.http.MediaType.APPLICATION_OCTET_STREAM_VALUE;
  */
 @RunWith(CamelSpringBootRunner.class)
 @SpringBootTest
-@ActiveProfiles({"default", "outbound-http"})
+@ActiveProfiles({DEFAULT_PROFILE, OUTBOUND_HTTP_PROFILE})
 public class StreamToMultiRouteTest {
     @Autowired
     private ProducerTemplate producerTemplate;

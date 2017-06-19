@@ -1,5 +1,6 @@
 package org.abhijitsarkar.camel;
 
+import lombok.RequiredArgsConstructor;
 import org.abhijitsarkar.camel.http.HttpHeadersMessageProcessor;
 import org.abhijitsarkar.camel.http.HttpProperties;
 import org.apache.camel.builder.RouteBuilder;
@@ -13,18 +14,18 @@ import java.io.OutputStream;
 import java.util.function.Supplier;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.abhijitsarkar.camel.Application.DEFAULT_PROFILE;
 
 /**
  * @author Abhijit Sarkar
  */
 @Component
-@Profile("default")
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@Profile(DEFAULT_PROFILE)
 public class StreamToMultiRoute extends RouteBuilder {
-    @Autowired
-    private Supplier<OutputStream> consumer;
-
-    @Autowired
-    private HttpProperties httpProperties;
+    private final Supplier<OutputStream> consumer;
+    private final HttpProperties httpProperties;
+    private final HttpHeadersMessageProcessor httpHeadersMessageProcessor;
 
     private String outboundHttpUri;
     private String outboundFileUri;
@@ -51,7 +52,7 @@ public class StreamToMultiRoute extends RouteBuilder {
         from("direct:in")
                 .convertBodyTo(byte[].class, UTF_8.name())
                 .process(new FilenameHeaderMessageProcessor())
-                .process(new HttpHeadersMessageProcessor(httpProperties))
+                .process(httpHeadersMessageProcessor)
                 .setHeader("stream", constant(consumer.get()))
                 .multicast().parallelProcessing()
                 .to(

@@ -19,6 +19,8 @@ import org.springframework.test.context.ActiveProfiles;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
+import static org.abhijitsarkar.camel.Application.INBOUND_S3_PROFILE;
+import static org.abhijitsarkar.camel.Application.OUTBOUND_HTTP_PROFILE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
@@ -30,7 +32,7 @@ import static org.springframework.http.HttpStatus.OK;
  */
 @RunWith(CamelSpringBootRunner.class)
 @SpringBootTest
-@ActiveProfiles({"inbound-s3", "outbound-http"})
+@ActiveProfiles({INBOUND_S3_PROFILE, OUTBOUND_HTTP_PROFILE})
 @Ignore("Needs S3 account")
 public class S3ToDynamicRouteTest {
     @Autowired
