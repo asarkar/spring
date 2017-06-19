@@ -4,6 +4,7 @@ import org.abhijitsarkar.camel.http.HttpProperties;
 import org.apache.camel.CamelContext;
 import org.apache.camel.builder.NotifyBuilder;
 import org.apache.camel.test.spring.CamelSpringBootRunner;
+import org.junit.After;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
@@ -13,7 +14,6 @@ import org.mockserver.junit.MockServerRule;
 import org.mockserver.verify.VerificationTimes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.io.IOException;
@@ -29,14 +29,10 @@ import static org.springframework.http.HttpStatus.OK;
  * @author Abhijit Sarkar
  */
 @RunWith(CamelSpringBootRunner.class)
-@SpringBootTest(properties = {
-        "outbound.http.hostAndPort=localhost:22222",
-        "outbound.http.path=/test"
-})
-@DirtiesContext
+@SpringBootTest
 @ActiveProfiles({"inbound-s3", "outbound-http"})
 @Ignore("Needs S3 account")
-public class S3ToHttpRouteTest {
+public class S3ToDynamicRouteTest {
     @Autowired
     private CamelContext camelContext;
 
@@ -47,6 +43,11 @@ public class S3ToHttpRouteTest {
     public MockServerRule mockServer = new MockServerRule(this, 22222);
 
     private MockServerClient mockServerClient;
+
+    @After
+    public void afterEach() {
+        mockServerClient.reset();
+    }
 
     @Test
     public void testS3ToHttpRoute() throws IOException {

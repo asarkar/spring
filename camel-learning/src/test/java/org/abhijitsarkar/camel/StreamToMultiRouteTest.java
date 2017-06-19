@@ -14,7 +14,6 @@ import org.mockserver.junit.MockServerRule;
 import org.mockserver.verify.VerificationTimes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.io.IOException;
@@ -46,8 +45,7 @@ import static org.springframework.http.MediaType.APPLICATION_OCTET_STREAM_VALUE;
  */
 @RunWith(CamelSpringBootRunner.class)
 @SpringBootTest
-@DirtiesContext
-@ActiveProfiles({"default"})
+@ActiveProfiles({"default", "outbound-http"})
 public class StreamToMultiRouteTest {
     @Autowired
     private ProducerTemplate producerTemplate;
@@ -59,13 +57,14 @@ public class StreamToMultiRouteTest {
     private CamelContext camelContext;
 
     @Rule
-    public MockServerRule mockServer = new MockServerRule(this);
+    public MockServerRule mockServer = new MockServerRule(this, 22222);
 
     private MockServerClient mockServerClient;
 
     @After
     public void afterEach() {
-        ((TestConfiguration.ByteArrayOutputStreamConsumer) consumer).reset();
+        ((Application.ByteArrayOutputStreamConsumer) consumer).reset();
+        mockServerClient.reset();
     }
 
     @Test
@@ -103,7 +102,7 @@ public class StreamToMultiRouteTest {
                 VerificationTimes.once()
         );
 
-        String body = ((TestConfiguration.ByteArrayOutputStreamConsumer) consumer).getBos()
+        String body = ((Application.ByteArrayOutputStreamConsumer) consumer).getBos()
                 .toString(UTF_8.name());
 
         assertThat(body).isEqualTo("hi");

@@ -1,6 +1,6 @@
 package org.abhijitsarkar.camel;
 
-import org.abhijitsarkar.camel.http.ForHttpMessageProcessor;
+import org.abhijitsarkar.camel.http.HttpHeadersMessageProcessor;
 import org.abhijitsarkar.camel.http.HttpProperties;
 import org.apache.camel.builder.RouteBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +39,7 @@ public class StreamToMultiRoute extends RouteBuilder {
                 .toUriString();
 
         outboundFileUri = UriComponentsBuilder.fromUriString("file://build")
-                .queryParam("autoCreate", false)
+                .queryParam("autoCreate", true)
                 .queryParam("eagerDeleteTargetFile", true)
                 .queryParam("tempFileName", "${date:now:yyyyMMdd-kkmmss}.tmp")
                 .build()
@@ -50,9 +50,10 @@ public class StreamToMultiRoute extends RouteBuilder {
     public void configure() throws Exception {
         from("direct:in")
                 .convertBodyTo(byte[].class, UTF_8.name())
-                .process(new ForHttpMessageProcessor(httpProperties))
+                .process(new FilenameHeaderMessageProcessor())
+                .process(new HttpHeadersMessageProcessor(httpProperties))
                 .setHeader("stream", constant(consumer.get()))
-                .multicast()
+                .multicast().parallelProcessing()
                 .to(
                         "stream:header",
                         outboundFileUri,

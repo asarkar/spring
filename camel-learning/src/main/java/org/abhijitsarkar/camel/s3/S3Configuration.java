@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Profile;
  * @author Abhijit Sarkar
  */
 @Configuration
-@Profile({"inbound-s3", "outbound-http"})
+@Profile({"inbound-s3"})
 public class S3Configuration {
     @Bean
     public AmazonS3 amazonS3(S3Properties s3Properties) {

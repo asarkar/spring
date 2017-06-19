@@ -1,17 +1,14 @@
 package org.abhijitsarkar.camel.http;
 
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
-import org.apache.camel.component.aws.s3.S3Constants;
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
@@ -24,7 +21,8 @@ import static org.apache.http.HttpHeaders.AUTHORIZATION;
  */
 @Slf4j
 @RequiredArgsConstructor
-public class ForHttpMessageProcessor implements org.apache.camel.Processor {
+public class HttpHeadersMessageProcessor implements org.apache.camel.Processor {
+    @NonNull
     private final HttpProperties httpProperties;
 
     @Override
@@ -39,17 +37,6 @@ public class ForHttpMessageProcessor implements org.apache.camel.Processor {
         // Without this, out body is null
         out.setBody(in.getBody());
 
-        Object filename = inHeaders.get(Exchange.FILE_NAME);
-
-        if (Objects.isNull(filename)) {
-            filename = inHeaders.get(S3Constants.KEY);
-
-            if (Objects.isNull(filename)) {
-                filename = defaultFilename();
-            }
-        }
-        out.setHeader(Exchange.FILE_NAME, filename);
-
         if (!outHeaders.containsKey(Exchange.CONTENT_TYPE)) {
             out.setHeader(Exchange.CONTENT_TYPE, Optional.ofNullable(inHeaders.get(Exchange.CONTENT_TYPE))
                     .orElse(httpProperties.getContentTypeHeader()));
@@ -62,7 +49,7 @@ public class ForHttpMessageProcessor implements org.apache.camel.Processor {
 
         if (!outHeaders.containsKey(Exchange.HTTP_URI)) {
             out.setHeader(Exchange.HTTP_URI, Optional.ofNullable(inHeaders.get(Exchange.HTTP_URI))
-                    .orElse(outboundUri(filename)));
+                    .orElse(outboundUri(inHeaders.get(Exchange.FILE_NAME))));
         }
 
         if (!outHeaders.containsKey(ACCEPT)) {
@@ -74,10 +61,8 @@ public class ForHttpMessageProcessor implements org.apache.camel.Processor {
             out.setHeader(AUTHORIZATION, Optional.ofNullable(inHeaders.get(AUTHORIZATION))
                     .orElse(authHeader()));
         }
-    }
 
-    private final String defaultFilename() {
-        return DateTimeFormatter.ofPattern("yyyyMMdd-kkmm").format(LocalDateTime.now()) + ".out";
+        out.setHeader(Exchange.FILE_NAME, inHeaders.get(Exchange.FILE_NAME));
     }
 
     private final String outboundUri(Object filename) {

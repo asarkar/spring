@@ -1,6 +1,8 @@
 package org.abhijitsarkar.camel.s3;
 
-import org.abhijitsarkar.camel.http.ForHttpMessageProcessor;
+import org.abhijitsarkar.camel.FilenameHeaderMessageProcessor;
+import org.abhijitsarkar.camel.OutboundRouter;
+import org.abhijitsarkar.camel.http.HttpHeadersMessageProcessor;
 import org.abhijitsarkar.camel.http.HttpProperties;
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
@@ -19,22 +21,21 @@ import javax.annotation.PostConstruct;
  * @author Abhijit Sarkar
  */
 @Component
-@Profile({"inbound-s3", "outbound-http"})
-public class S3ToHttpRoute extends RouteBuilder {
+@Profile({"inbound-s3"})
+public class S3ToDynamicRoute extends RouteBuilder {
     @Autowired
     private S3Properties s3Properties;
 
-    @Autowired
+    @Autowired(required = false)
     private HttpProperties httpProperties;
 
     @Value("${inbound.timer.period:5000}")
-    private long delay;
+    private long inboundTimerDelay;
 
     @Value("${inbound.cache.size:200}")
     private int inboundCacheSize;
 
     private String inboundS3Uri;
-    private String outboundHttpUri;
 
     @PostConstruct
     void init() {
@@ -44,14 +45,7 @@ public class S3ToHttpRoute extends RouteBuilder {
                 .queryParam("prefix", s3Properties.getPrefix())
                 .queryParam("includeBody", true)
                 .queryParam("maxMessagesPerPoll", s3Properties.getMaxFetchSize())
-                .queryParam("delay", delay)
-                .build()
-                .toUriString();
-
-        outboundHttpUri = UriComponentsBuilder.fromUriString("http4://notused")
-                .queryParam("disableStreamCache", true)
-                .queryParam("httpClient.socketTimeout", httpProperties.getReadTimeoutMillis())
-                .queryParam("httpClient.connectTimeout", httpProperties.getConnectTimeoutMillis())
+                .queryParam("delay", inboundTimerDelay)
                 .build()
                 .toUriString();
     }
@@ -61,6 +55,9 @@ public class S3ToHttpRoute extends RouteBuilder {
         S3LastModifiedFilter lastModifiedFilter =
                 new S3LastModifiedFilter(s3Properties.getLastModifiedWithinSeconds(), s3Properties.getPrefix());
 
+        interceptSendToEndpoint("http4://*")
+                .process(new HttpHeadersMessageProcessor(httpProperties));
+
         from(inboundS3Uri)
                 .filter().method(lastModifiedFilter, "accept")
                 .idempotentConsumer(header(S3Constants.KEY),
@@ -68,8 +65,8 @@ public class S3ToHttpRoute extends RouteBuilder {
                 // Don't use this for big files as it must read the content into memory
                 // to be able to convert to another format.
 //                .convertBodyTo(byte[].class)
-                .process(new ForHttpMessageProcessor(httpProperties))
+                .process(new FilenameHeaderMessageProcessor())
                 .log(LoggingLevel.INFO, log.getName(), "Processing [${header." + Exchange.FILE_NAME + "}]")
-                .to(outboundHttpUri);
+                .dynamicRouter().method(OutboundRouter.class, "findRoute");
     }
 }
