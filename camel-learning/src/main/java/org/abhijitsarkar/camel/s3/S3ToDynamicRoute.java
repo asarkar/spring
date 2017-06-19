@@ -59,7 +59,7 @@ public class S3ToDynamicRoute extends RouteBuilder {
                 .process(httpHeadersMessageProcessor);
 
         from(inboundS3Uri)
-                .filter().method(lastModifiedFilter, "accept")
+                .filter().method(lastModifiedFilter)
                 .idempotentConsumer(header(S3Constants.KEY),
                         MemoryIdempotentRepository.memoryIdempotentRepository(inboundCacheSize))
                 // Don't use this for big files as it must read the content into memory
