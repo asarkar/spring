@@ -2,6 +2,8 @@ package org.abhijitsarkar.camel.s3;
 
 import org.abhijitsarkar.camel.http.ForHttpMessageProcessor;
 import org.abhijitsarkar.camel.http.HttpProperties;
+import org.apache.camel.Exchange;
+import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.aws.s3.S3Constants;
 import org.apache.camel.processor.idempotent.MemoryIdempotentRepository;
@@ -12,8 +14,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.annotation.PostConstruct;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * @author Abhijit Sarkar
@@ -65,8 +65,11 @@ public class S3ToHttpRoute extends RouteBuilder {
                 .filter().method(lastModifiedFilter, "accept")
                 .idempotentConsumer(header(S3Constants.KEY),
                         MemoryIdempotentRepository.memoryIdempotentRepository(inboundCacheSize))
-                .convertBodyTo(byte[].class, UTF_8.name())
+                // Don't use this for big files as it must read the content into memory
+                // to be able to convert to another format.
+//                .convertBodyTo(byte[].class)
                 .process(new ForHttpMessageProcessor(httpProperties))
+                .log(LoggingLevel.INFO, log.getName(), "Processing [${header." + Exchange.FILE_NAME + "}]")
                 .to(outboundHttpUri);
     }
 }
