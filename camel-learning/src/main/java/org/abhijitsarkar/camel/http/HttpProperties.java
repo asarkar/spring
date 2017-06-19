@@ -22,6 +22,6 @@ public class HttpProperties {
     private String password = "password";
     private String hostAndPort = "localhost:8081";
     private String path = "/artifactory/test-repo/{filename}";
-    private int connectTimeout = 500;
-    private int readTimeout = 5000;
+    private int connectTimeoutMillis = 500;
+    private int readTimeoutMillis = 5000;
 }

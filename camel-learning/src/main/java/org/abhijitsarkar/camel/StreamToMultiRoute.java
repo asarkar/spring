@@ -33,8 +33,8 @@ public class StreamToMultiRoute extends RouteBuilder {
     void init() {
         outboundHttpUri = UriComponentsBuilder.fromUriString("http4://notused")
                 .queryParam("disableStreamCache", true)
-                .queryParam("httpClient.socketTimeout", httpProperties.getReadTimeout())
-                .queryParam("httpClient.connectTimeout", httpProperties.getConnectTimeout())
+                .queryParam("httpClient.socketTimeout", httpProperties.getReadTimeoutMillis())
+                .queryParam("httpClient.connectTimeout", httpProperties.getConnectTimeoutMillis())
                 .build()
                 .toUriString();
 

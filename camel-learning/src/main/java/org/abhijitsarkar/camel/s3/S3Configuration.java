@@ -1,5 +1,6 @@
 package org.abhijitsarkar.camel.s3;
 
+import com.amazonaws.ClientConfiguration;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
@@ -19,7 +20,14 @@ public class S3Configuration {
     public AmazonS3 amazonS3(S3Properties s3Properties) {
         AWSCredentials awsCredentials = new BasicAWSCredentials(s3Properties.getAccessKey(), s3Properties.getSecretKey());
 
+        ClientConfiguration clientConfiguration = new ClientConfiguration()
+                .withMaxConnections(s3Properties.getMaxConnections())
+                .withConnectionTimeout(s3Properties.getConnectTimeoutMillis())
+                .withSocketTimeout(s3Properties.getReadTimeoutMillis())
+                .withConnectionMaxIdleMillis(s3Properties.getMaxIdleMillis());
+
         AmazonS3 amazonS3 = AmazonS3ClientBuilder.standard()
+                .withClientConfiguration(clientConfiguration)
                 .withRegion(s3Properties.getRegion())
                 .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
                 .build();
