@@ -16,4 +16,8 @@
         <appender-ref ref="STDOUT"/>
     </logger>
 
+    <logger name="org.apache.camel.processor.interceptor" level="INFO" additivity="false">
+        <appender-ref ref="STDOUT"/>
+    </logger>
+
 </configuration>

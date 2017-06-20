@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.abhijitsarkar.camel.http.HttpHeadersMessageProcessor;
 import org.abhijitsarkar.camel.http.HttpProperties;
 import org.apache.camel.builder.RouteBuilder;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -13,14 +12,13 @@ import javax.annotation.PostConstruct;
 import java.io.OutputStream;
 import java.util.function.Supplier;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.abhijitsarkar.camel.Application.DEFAULT_PROFILE;
 
 /**
  * @author Abhijit Sarkar
  */
 @Component
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@RequiredArgsConstructor
 @Profile(DEFAULT_PROFILE)
 public class StreamToMultiRoute extends RouteBuilder {
     private final Supplier<OutputStream> consumer;
@@ -49,8 +47,10 @@ public class StreamToMultiRoute extends RouteBuilder {
 
     @Override
     public void configure() throws Exception {
+        getContext().setTracing(true);
+
         from("direct:in")
-                .convertBodyTo(byte[].class, UTF_8.name())
+                .convertBodyTo(byte[].class)
                 .process(new FilenameHeaderMessageProcessor())
                 .process(httpHeadersMessageProcessor)
                 .setHeader("stream", constant(consumer.get()))

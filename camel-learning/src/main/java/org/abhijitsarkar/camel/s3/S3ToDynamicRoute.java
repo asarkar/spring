@@ -9,7 +9,6 @@ import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.aws.s3.S3Constants;
 import org.apache.camel.processor.idempotent.MemoryIdempotentRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -23,7 +22,7 @@ import static org.abhijitsarkar.camel.Application.INBOUND_S3_PROFILE;
  * @author Abhijit Sarkar
  */
 @Component
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@RequiredArgsConstructor
 @Profile(INBOUND_S3_PROFILE)
 public class S3ToDynamicRoute extends RouteBuilder {
     private final S3Properties s3Properties;
@@ -54,6 +53,8 @@ public class S3ToDynamicRoute extends RouteBuilder {
     public void configure() throws Exception {
         S3LastModifiedFilter lastModifiedFilter =
                 new S3LastModifiedFilter(s3Properties.getLastModifiedWithinSeconds(), s3Properties.getPrefix());
+
+        getContext().setTracing(true);
 
         interceptSendToEndpoint("http4://*")
                 .process(httpHeadersMessageProcessor);

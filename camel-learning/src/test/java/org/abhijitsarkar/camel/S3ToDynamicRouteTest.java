@@ -4,7 +4,6 @@ import org.abhijitsarkar.camel.http.HttpProperties;
 import org.apache.camel.CamelContext;
 import org.apache.camel.builder.NotifyBuilder;
 import org.apache.camel.test.spring.CamelSpringBootRunner;
-import org.junit.After;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
@@ -46,15 +45,10 @@ public class S3ToDynamicRouteTest {
 
     private MockServerClient mockServerClient;
 
-    @After
-    public void afterEach() {
-        mockServerClient.reset();
-    }
-
     @Test
     public void testS3ToHttpRoute() throws IOException {
         NotifyBuilder notify = new NotifyBuilder(camelContext)
-                .whenDone(1)
+                .whenDone(1).wereSentTo("http4://*")
                 .create();
 
         mockServerClient.when(
@@ -66,7 +60,7 @@ public class S3ToDynamicRouteTest {
                         .withStatusCode(OK.value())
                 );
 
-        assertThat(notify.matches(5, TimeUnit.SECONDS));
+        assertThat(notify.matches(5, TimeUnit.SECONDS)).isTrue();
 
         mockServerClient.verify(
                 request()

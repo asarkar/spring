@@ -14,7 +14,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import static java.util.stream.Collectors.joining;
 import static org.abhijitsarkar.camel.Application.DEFAULT_PROFILE;
 import static org.abhijitsarkar.camel.Application.OUTBOUND_HTTP_PROFILE;
 
@@ -67,11 +66,16 @@ public class OutboundRouter {
         // Store the state back on the properties
         properties.put(OUTBOUND_PROFILES_INVOKED, invoked);
 
-        log.info("Routes found: {}.", routes);
+        switch (routes.size()) {
+            case 0:
+                return null;
+            case 1:
+                log.info("Found route: {}.", routes.get(0));
 
-        Assert.state(routes.size() <= 1,
-                String.format("Multiple routes found: %s. Only one outbound route can be enabled.", routes));
-
-        return routes.isEmpty() ? null : routes.stream().collect(joining(","));
+                return routes.get(0);
+            default:
+                // Streaming input can only be consumed once
+                throw new IllegalStateException(String.format("Multiple routes found: %s. Only one outbound route can be enabled.", routes));
+        }
     }
 }

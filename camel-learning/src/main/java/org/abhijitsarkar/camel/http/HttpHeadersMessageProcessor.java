@@ -5,8 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.commons.codec.binary.Base64;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.Map;
@@ -14,6 +14,10 @@ import java.util.Optional;
 
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.apache.camel.Exchange.CONTENT_TYPE;
+import static org.apache.camel.Exchange.FILE_NAME;
+import static org.apache.camel.Exchange.HTTP_METHOD;
+import static org.apache.camel.Exchange.HTTP_URI;
 import static org.apache.http.HttpHeaders.ACCEPT;
 import static org.apache.http.HttpHeaders.AUTHORIZATION;
 
@@ -21,7 +25,7 @@ import static org.apache.http.HttpHeaders.AUTHORIZATION;
  * @author Abhijit Sarkar
  */
 @Slf4j
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@RequiredArgsConstructor
 @Component
 public class HttpHeadersMessageProcessor implements org.apache.camel.Processor {
     private final HttpProperties httpProperties;
@@ -38,32 +42,26 @@ public class HttpHeadersMessageProcessor implements org.apache.camel.Processor {
         // Without this, out body is null
         out.setBody(in.getBody());
 
-        if (!outHeaders.containsKey(Exchange.CONTENT_TYPE)) {
-            out.setHeader(Exchange.CONTENT_TYPE, Optional.ofNullable(inHeaders.get(Exchange.CONTENT_TYPE))
-                    .orElse(httpProperties.getContentTypeHeader()));
-        }
+        Object filename = inHeaders.get(FILE_NAME);
 
-        if (!outHeaders.containsKey(Exchange.HTTP_METHOD)) {
-            out.setHeader(Exchange.HTTP_METHOD, Optional.ofNullable(inHeaders.get(Exchange.HTTP_METHOD))
-                    .orElse(httpProperties.getMethod()));
-        }
+        Assert.notNull(filename, String.format("%s header is required.", FILE_NAME));
 
-        if (!outHeaders.containsKey(Exchange.HTTP_URI)) {
-            out.setHeader(Exchange.HTTP_URI, Optional.ofNullable(inHeaders.get(Exchange.HTTP_URI))
-                    .orElse(outboundUri(inHeaders.get(Exchange.FILE_NAME))));
-        }
+        out.setHeader(FILE_NAME, inHeaders.get(FILE_NAME));
 
-        if (!outHeaders.containsKey(ACCEPT)) {
-            out.setHeader(ACCEPT, Optional.ofNullable(inHeaders.get(ACCEPT))
-                    .orElse(httpProperties.getAcceptHeader()));
-        }
+        outHeaders.putIfAbsent(CONTENT_TYPE, Optional.ofNullable(inHeaders.get(CONTENT_TYPE))
+                .orElse(httpProperties.getContentTypeHeader()));
 
-        if (!outHeaders.containsKey(AUTHORIZATION)) {
-            out.setHeader(AUTHORIZATION, Optional.ofNullable(inHeaders.get(AUTHORIZATION))
-                    .orElse(authHeader()));
-        }
+        outHeaders.putIfAbsent(HTTP_METHOD, Optional.ofNullable(inHeaders.get(HTTP_METHOD))
+                .orElse(httpProperties.getMethod()));
 
-        out.setHeader(Exchange.FILE_NAME, inHeaders.get(Exchange.FILE_NAME));
+        outHeaders.putIfAbsent(HTTP_URI, Optional.ofNullable(inHeaders.get(HTTP_URI))
+                .orElse(outboundUri(filename)));
+
+        outHeaders.putIfAbsent(ACCEPT, Optional.ofNullable(inHeaders.get(ACCEPT))
+                .orElse(httpProperties.getAcceptHeader()));
+
+        outHeaders.putIfAbsent(AUTHORIZATION, Optional.ofNullable(inHeaders.get(AUTHORIZATION))
+                .orElse(authHeader()));
     }
 
     private final String outboundUri(Object filename) {

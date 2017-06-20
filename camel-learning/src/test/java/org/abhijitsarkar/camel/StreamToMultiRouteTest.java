@@ -66,7 +66,6 @@ public class StreamToMultiRouteTest {
     @After
     public void afterEach() {
         ((Application.ByteArrayOutputStreamConsumer) consumer).reset();
-        mockServerClient.reset();
     }
 
     @Test
@@ -92,7 +91,7 @@ public class StreamToMultiRouteTest {
 
         producerTemplate.sendBodyAndHeaders("direct:in", "hi", headers);
 
-        assertThat(notify.matches(5, TimeUnit.SECONDS));
+        assertThat(notify.matches(5, TimeUnit.SECONDS)).isTrue();
 
         mockServerClient.verify(
                 request()
