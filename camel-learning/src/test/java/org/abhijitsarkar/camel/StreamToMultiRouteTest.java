@@ -71,7 +71,8 @@ public class StreamToMultiRouteTest {
     @Test
     public void testMultiRoute() throws IOException {
         NotifyBuilder notify = new NotifyBuilder(camelContext)
-                .whenDone(3)
+                // 1 message + 3 destinations
+                .whenDone(4)
                 .create();
 
         URL url = new URL(String.format("http://localhost:%d/test", mockServer.getPort()));
