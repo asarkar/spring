@@ -1,0 +1,43 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        maven { url "https://repo.spring.io/snapshot" }
+        maven { url "https://repo.spring.io/milestone" }
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
+}
+
+apply plugin: "java"
+apply plugin: "eclipse"
+apply plugin: "org.springframework.boot"
+apply plugin: "io.spring.dependency-management"
+
+version = "0.0.1-SNAPSHOT"
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    maven { url "https://repo.spring.io/snapshot" }
+    maven { url "https://repo.spring.io/milestone" }
+    maven { url "https://repo.gradle.org/gradle/libs-releases" }
+}
+
+
+dependencies {
+    compileOnly("org.projectlombok:lombok:$lombokVersion")
+    compile(
+            "org.springframework.boot:spring-boot-starter",
+            "org.eclipse.jgit:org.eclipse.jgit:${jgitVersion}",
+            "io.projectreactor:reactor-core",
+            "com.fasterxml.jackson.core:jackson-databind",
+            "org.gradle:gradle-tooling-api:${gradleToolingApiVersion}"
+    )
+    runtime(
+            "org.slf4j:slf4j-api:$slf4jVersion",
+            "ch.qos.logback:logback-classic:$logbackVersion",
+            "ch.qos.logback:logback-core:$logbackVersion"
+    )
+    testCompile("org.springframework.boot:spring-boot-starter-test")
+}

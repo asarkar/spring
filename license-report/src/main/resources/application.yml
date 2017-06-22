@@ -1,0 +1,9 @@
+gitlab:
+  baseUrl: https://gitlabs.mydomain.com
+  groups:
+    -
+      name: myGroup
+      privateToken: blah
+      includesProjects:
+        - a
+        - b
