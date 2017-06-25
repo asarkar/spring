@@ -1,0 +1,52 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath(
+                "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
+        )
+    }
+}
+
+apply plugin: "java"
+apply plugin: "eclipse"
+apply plugin: "org.springframework.boot"
+
+version = "0.0.1-SNAPSHOT"
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+group "org.abhijitsarkar"
+version "1.0-SNAPSHOT"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compileOnly("org.projectlombok:lombok:${lombokVersion}")
+    compile(
+            "org.springframework.boot:spring-boot-starter",
+            "org.apache.camel:camel-spring-boot-starter:${camelVersion}",
+            "org.apache.camel:camel-hystrix:${camelVersion}"
+    )
+    runtime(
+            "org.slf4j:slf4j-api:$slf4jVersion",
+            "ch.qos.logback:logback-classic",
+            "ch.qos.logback:logback-core"
+    )
+    testCompile(
+            "org.springframework.boot:spring-boot-starter-test",
+            "org.apache.camel:camel-test-spring:${camelVersion}",
+            "org.assertj:assertj-core",
+            "org.projectlombok:lombok:${lombokVersion}"
+    )
+}
+
+tasks.withType(JavaCompile) {
+    options.compilerArgs.addAll(["-Xlint:unchecked", "-Werror", "-Xlint:deprecation"])
+}
