@@ -2,11 +2,12 @@ package org.abhijitsarkar.camel.github;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.abhijitsarkar.camel.github.consumer.GitHubConsumer;
 import org.abhijitsarkar.camel.github.producer.GitHubProducer;
 import org.apache.camel.Consumer;
 import org.apache.camel.Processor;
 import org.apache.camel.Producer;
-import org.apache.camel.impl.DefaultEndpoint;
+import org.apache.camel.impl.ScheduledPollEndpoint;
 import org.apache.camel.spi.Metadata;
 import org.apache.camel.spi.UriEndpoint;
 import org.apache.camel.spi.UriParam;
@@ -14,13 +15,15 @@ import org.apache.camel.spi.UriPath;
 import org.apache.camel.util.StringHelper;
 import org.springframework.util.StringUtils;
 
+import java.util.Map;
+
 /**
  * @author Abhijit Sarkar
  */
 @UriEndpoint(scheme = "github", title = "GitHub", syntax = "github:type/repo/owner/branch", label = "api,file")
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class GitHubEndpoint extends DefaultEndpoint {
+public class GitHubEndpoint extends ScheduledPollEndpoint {
     private static final String DEFAULT_LIMIT = "20";
     private static final String DEFAULT_BRANCH = "master";
 
@@ -52,7 +55,9 @@ public class GitHubEndpoint extends DefaultEndpoint {
     private String sha;
 
     @Override
-    public Producer createProducer() throws Exception {
+    public void configureProperties(Map<String, Object> options) {
+        super.configureProperties(options);
+
         StringHelper.notEmpty(repo, "repo");
         StringHelper.notEmpty(owner, "owner");
         StringHelper.notEmpty(username, "username");
@@ -68,12 +73,16 @@ public class GitHubEndpoint extends DefaultEndpoint {
         if (limit == 0) {
             limit = Integer.parseInt(DEFAULT_LIMIT);
         }
+    }
+
+    @Override
+    public Producer createProducer() throws Exception {
         return new GitHubProducer(this);
     }
 
     @Override
     public Consumer createConsumer(Processor processor) throws Exception {
-        throw new UnsupportedOperationException();
+        return new GitHubConsumer(this, processor);
     }
 
     @Override

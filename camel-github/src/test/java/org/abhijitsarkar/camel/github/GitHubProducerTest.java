@@ -1,6 +1,5 @@
 package org.abhijitsarkar.camel.github;
 
-import org.apache.camel.CamelContext;
 import org.apache.camel.EndpointInject;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.RouteBuilder;
@@ -31,17 +30,14 @@ import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER
  * @author Abhijit Sarkar
  */
 @RunWith(CamelSpringBootRunner.class)
-@SpringBootTest(classes = {Application.class, GitHubRouteTest.TestConfiguration.class})
+@SpringBootTest(classes = {Application.class, GitHubProducerTest.TestConfiguration.class})
 @DirtiesContext(classMode = AFTER_EACH_TEST_METHOD)
-public class GitHubRouteTest {
+public class GitHubProducerTest {
     @Autowired
     private ProducerTemplate producerTemplate;
 
     @Autowired
     private GitHubClient gitHubClient;
-
-    @Autowired
-    private CamelContext context;
 
     @EndpointInject(uri = "mock:result")
     protected MockEndpoint resultEndpoint;
@@ -74,16 +70,17 @@ public class GitHubRouteTest {
     }
 
     @Test
-    public void testHystrixFallback() {
+    public void testHystrixFallback() throws InterruptedException {
         when(gitHubClient.getCommitsForARepo(any(GitHubRequest.class), anyInt()))
                 .thenThrow(new RuntimeException("boom!"));
+        resultEndpoint.expectedBodiesReceived("fallback");
 
         producerTemplate.sendBodyAndHeader("direct:start", "whatever",
                 "endpoint", "commits/test/test?username=test&password=test");
 
         verify(gitHubClient).getCommitsForARepo(any(GitHubRequest.class), anyInt());
 
-        resultEndpoint.expectedBodiesReceived("fallback");
+        resultEndpoint.assertIsSatisfied();
     }
 
     private final void verifyGitHubRequest(GitHubRequest request) {
