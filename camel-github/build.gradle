@@ -32,7 +32,10 @@ dependencies {
     compile(
             "org.springframework.boot:spring-boot-starter",
             "org.apache.camel:camel-spring-boot-starter:${camelVersion}",
-            "org.apache.camel:camel-hystrix:${camelVersion}"
+            "org.apache.camel:camel-hystrix:${camelVersion}",
+            "io.github.openfeign:feign-core:${feignVersion}",
+            "io.github.openfeign:feign-jackson:${feignVersion}",
+            "io.github.openfeign:feign-slf4j:${feignVersion}"
     )
     runtime(
             "org.slf4j:slf4j-api:$slf4jVersion",

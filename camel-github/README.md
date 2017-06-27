@@ -1,1 +1,1 @@
-Camel custom producer.
+Camel custom producer and consumer.

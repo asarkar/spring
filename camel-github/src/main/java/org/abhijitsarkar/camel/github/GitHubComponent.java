@@ -17,17 +17,16 @@ public class GitHubComponent extends DefaultComponent {
         String[] parts = remaining.split("/");
 
         switch (parts.length) {
+            case 5:
+                endpoint.setSha(parts[4]);
             case 4:
-                endpoint.setBranch(parts[3]);
+                endpoint.setRepo(parts[2]);
             case 3:
-                endpoint.setOwner(parts[2]);
-            case 2:
-                endpoint.setRepo(parts[1]);
-            case 1:
                 GitHubType type = getCamelContext().getTypeConverter().convertTo(GitHubType.class,
                         parts[0].toUpperCase());
 
                 endpoint.setType(type);
+                endpoint.setUsername(parts[1]);
                 break;
             default:
                 break;
