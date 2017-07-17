@@ -1,6 +1,5 @@
 package org.abhijitsarkar
 
-import org.abhijitsarkar.domain.License
 import org.apache.poi.common.usermodel.HyperlinkType
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.CellStyle
@@ -14,6 +13,7 @@ import org.apache.poi.ss.usermodel.VerticalAlignment.TOP
 import org.apache.poi.ss.usermodel.Workbook
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.slf4j.LoggerFactory
+import org.springframework.context.event.EventListener
 import java.io.File
 import java.io.FileOutputStream
 
@@ -21,12 +21,16 @@ import java.io.FileOutputStream
 /**
  * @author Abhijit Sarkar
  */
-object ExcelReportGenerator {
+class ExcelReportGenerator {
     private val headers = arrayOf("License", "License URL", "License URL Status", "Components")
     private val licenseReport = "License Report.xlsx"
     private val log = LoggerFactory.getLogger(ExcelReportGenerator::class.java)
 
-    fun generateReport(licenses: MutableMap<String, MutableCollection<License>>): Unit {
+    @EventListener(LicenseGeneratedEvent::class)
+    fun generateReport(event: LicenseGeneratedEvent): Unit {
+        log.info("Received LicenseGeneratedEvent.")
+        val licenses = event.licenses
+
         val workbook = XSSFWorkbook()
 
         val regularCs = newCellStyle(workbook, ColumnFormatting.REGULAR)
@@ -90,7 +94,7 @@ object ExcelReportGenerator {
                 }
 
         if (workbook.numberOfSheets == 0) {
-            log.warn("No license files found. Skipping report generation.")
+            log.warn("No license files found; skipping report generation.")
         } else {
             workbook.use {
                 val reports = File("build", "reports")

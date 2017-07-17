@@ -6,13 +6,13 @@ import org.abhijitsarkar.domain.License
 import org.abhijitsarkar.service.GradleAgent
 import org.abhijitsarkar.service.JGitAgent
 import org.abhijitsarkar.service.ReportParser
-import org.slf4j.LoggerFactory
+import org.springframework.boot.CommandLineRunner
 import org.springframework.boot.WebApplicationType
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.builder.SpringApplicationBuilder
 import org.springframework.boot.context.properties.EnableConfigurationProperties
+import org.springframework.context.ApplicationEventPublisher
 import reactor.core.publisher.Flux
-import reactor.core.publisher.Mono
 import reactor.core.scheduler.Schedulers
 import java.time.Duration
 
@@ -27,21 +27,10 @@ class Application(
         val gitLabClient: GitLabClient,
         val jGitAgent: JGitAgent,
         val gradleAgent: GradleAgent,
-        val reportParser: ReportParser
-) {
-    private val log = LoggerFactory.getLogger(Application::class.java)
-
-    fun main(args: Array<String>) {
-        SpringApplicationBuilder(Application::class.java)
-                .web(WebApplicationType.NONE)
-                .run(*args)
-
-        val licenses = run()
-                .block(Duration.ofMinutes(applicationProperties.timeoutMinutes))
-        ExcelReportGenerator.generateReport(licenses)
-    }
-
-    fun run(): Mono<MutableMap<String, MutableCollection<License>>> {
+        val reportParser: ReportParser,
+        val eventPublisher: ApplicationEventPublisher
+) : CommandLineRunner {
+    override fun run(vararg args: String): Unit {
         val groups = gitLabProperties.groups
 
         fun isNotExcluded(projectName: String, groupName: String) =
@@ -56,8 +45,10 @@ class Application(
                         ?.includedProjects
                         ?.run { isEmpty() || containsKey(projectName) } ?: true
 
-        return Flux.fromIterable(groups.entries)
-                .flatMap { gitLabClient.projects(it.toPair()) }
+        Flux.fromIterable(groups.entries)
+                .flatMap {
+                    gitLabClient.projects(it.toPair())
+                }
                 .filter {
                     val projectName = it.second.name
                     val groupName = it.first
@@ -73,6 +64,17 @@ class Application(
                 .sequential()
                 .sort(compareBy({ it.first }, { it.second.valid }, { it.second.url }))
                 .collectMultimap(Pair<String, License>::first, Pair<String, License>::second)
-                .doOnNext { map -> map.forEach { log.debug("Project name: {}, licenses: {}.", it.key, it.value) } }
+                .map(::LicenseGeneratedEvent)
+                .doOnNext { eventPublisher.publishEvent(it) }
+                .block(Duration.ofMinutes(applicationProperties.timeoutMinutes))
+    }
+
+    companion object {
+        @JvmStatic
+        fun main(args: Array<String>) {
+            SpringApplicationBuilder(Application::class.java)
+                    .web(WebApplicationType.NONE)
+                    .run(*args)
+        }
     }
 }

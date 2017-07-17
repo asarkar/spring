@@ -3,7 +3,9 @@ package org.abhijitsarkar.service
 import io.kotlintest.specs.ShouldSpec
 import org.abhijitsarkar.client.GitLabProperties
 import org.abhijitsarkar.client.Group
+import org.abhijitsarkar.projectDir
 import reactor.test.StepVerifier
+import java.nio.file.Paths
 import java.time.Duration
 
 /**
@@ -13,10 +15,10 @@ class JGitAgentTest : ShouldSpec() {
     init {
         val jGitAgent = JGitAgentImpl()
 
-        should("clone GitHub project") {
+        should("clone test project") {
             val project = Group.Project().apply {
-                sshUrl = "git@github.com:asarkar/kotlin.git"
-                name = "kotlin"
+                sshUrl = "${Paths.get(projectDir().absolutePath, "test-project").toUri()}"
+                name = "test-project"
             }
 
             val groupProperties = GitLabProperties.GroupProperties()

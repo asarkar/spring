@@ -20,7 +20,7 @@ interface JGitAgent {
     fun clone(project: Group.Project, group: GitLabProperties.GroupProperties?): Mono<File>
 }
 
-internal class JGitAgentImpl : JGitAgent {
+class JGitAgentImpl : JGitAgent {
     init {
         SshSessionFactory.setInstance(object : JschConfigSessionFactory() {
             override fun configure(hc: OpenSshConfig.Host, session: Session) {
@@ -66,6 +66,6 @@ internal class JGitAgentImpl : JGitAgent {
             }
         }
                 .retry(2)
-                .onErrorResume { _ -> Mono.empty() }
+                .onErrorResume { t -> log.error("Failed to clone repo: {}.", project.sshUrl, t); Mono.empty() }
     }
 }

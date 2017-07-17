@@ -2,6 +2,7 @@ package org.abhijitsarkar.service
 
 import io.kotlintest.matchers.shouldBe
 import io.kotlintest.specs.ShouldSpec
+import org.abhijitsarkar.projectDir
 import reactor.test.StepVerifier
 import java.io.File
 import java.time.Duration
@@ -10,27 +11,13 @@ import java.time.Duration
  * @author Abhijit Sarkar
  */
 class GradleAgentTest : ShouldSpec() {
-    fun projectDir(): File {
-        var projectDir = File(GradleAgentTest::class.java.getResource("/").toURI())
-
-        for (i in 1..10) {
-            if (projectDir.name == "license-report-kotlin") {
-                println("Found project directory.")
-                break
-            } else {
-                projectDir = projectDir.parentFile ?: File("/")
-            }
-        }
-
-        return projectDir
-    }
-
     init {
-        val gradleAgent = GradleAgentImpl("clean")
-        var projectDir = projectDir()
+        val gradleAgent = GradleAgentImpl()
+        val projectDir = projectDir()
+        val testProjectDir = File(projectDir(), "test-project")
 
         should("recognize Gradle project") {
-            gradleAgent.isGradleProject(projectDir) shouldBe true
+            gradleAgent.isGradleProject(testProjectDir) shouldBe true
         }
 
         should("extract Gradle distribution URL") {
@@ -40,9 +27,9 @@ class GradleAgentTest : ShouldSpec() {
                     .verify(Duration.ofSeconds(3L))
         }
 
-        should("execute clean task") {
-            StepVerifier.create(gradleAgent.generateLicense(projectDir, ""))
-                    .assertNext { it.second shouldBe projectDir.absolutePath }
+        should("execute downloadLicenses task") {
+            StepVerifier.create(gradleAgent.generateLicense(testProjectDir, ""))
+                    .assertNext { it.second shouldBe testProjectDir.absolutePath }
                     .expectComplete()
                     .verify(Duration.ofSeconds(3L))
         }

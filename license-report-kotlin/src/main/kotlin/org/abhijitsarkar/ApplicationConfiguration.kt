@@ -34,4 +34,7 @@ class ApplicationConfiguration {
 
     @Bean
     fun reportParser(): ReportParser = ReportParserImpl(linkVerifier())
+
+    @Bean
+    fun excelReportGenerator(): ExcelReportGenerator = ExcelReportGenerator()
 }

@@ -3,8 +3,8 @@ licensereport:
   gitlab:
     baseUrl: whatever
     groups:
-      testGroup:
+      test-group:
         privateToken: whatever
         includedProjects:
-          testProject:
-            branch: testBranch
+          test-project:
+            branch: master
