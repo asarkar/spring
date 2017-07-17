@@ -2,6 +2,7 @@ package org.abhijitsarkar.service
 
 import com.github.benmanes.caffeine.cache.Cache
 import com.github.benmanes.caffeine.cache.Caffeine
+import org.slf4j.LoggerFactory
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
@@ -25,6 +26,8 @@ internal class LinkVerifierImpl private constructor(val webClient: WebClient, va
                 LinkVerifierImpl(webClient, cache)
     }
 
+    private val log = LoggerFactory.getLogger(LinkVerifier::class.java)
+
     override fun isValid(link: String): Mono<Boolean> {
         val split = link.split(":".toRegex(), 2)
 
@@ -47,7 +50,7 @@ internal class LinkVerifierImpl private constructor(val webClient: WebClient, va
                         .map(ClientResponse::statusCode)
                         .map { it.value() < 400 }
                         .doOnSuccess { cache.put(path, it) }
-                        .onErrorReturn(false)
+                        .onErrorResume { t -> log.error("Failed to verify link: {}.", link, t); Mono.just(false) }
                 )
     }
 }

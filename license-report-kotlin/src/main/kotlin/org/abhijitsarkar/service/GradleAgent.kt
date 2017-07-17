@@ -20,7 +20,7 @@ interface GradleAgent {
     fun generateLicense(dir: File, options: String): Mono<Pair<String, String>>
 }
 
-class GradleAgentImpl(vararg val tasks: String = arrayOf("clean", "downloadLicenses")) : GradleAgent {
+internal class GradleAgentImpl(vararg val tasks: String = arrayOf("clean", "downloadLicenses")) : GradleAgent {
     private val log = LoggerFactory.getLogger(GradleAgent::class.java)
 
     override fun isGradleProject(dir: File): Boolean = File(dir, "build.gradle")

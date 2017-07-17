@@ -20,7 +20,7 @@ interface JGitAgent {
     fun clone(project: Group.Project, group: GitLabProperties.GroupProperties?): Mono<File>
 }
 
-class JGitAgentImpl : JGitAgent {
+internal class JGitAgentImpl : JGitAgent {
     init {
         SshSessionFactory.setInstance(object : JschConfigSessionFactory() {
             override fun configure(hc: OpenSshConfig.Host, session: Session) {

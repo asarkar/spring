@@ -20,7 +20,7 @@ internal class GitLabClientImpl constructor(
     override fun projects(pair: Pair<GroupName, GitLabProperties.GroupProperties>): Flux<Pair<GroupName, Group.Project>> =
             webClient
                     .get()
-                    .uri("{baseUrl}/api/v4/groups/{groupName}", gitLabProperties.baseUrl, pair.first)
+                    .uri("${gitLabProperties.baseUrl}/api/v4/groups/{groupName}", pair.first)
                     .accept(MediaType.APPLICATION_JSON)
                     .header("PRIVATE-TOKEN", pair.second.privateToken)
                     .retrieve()

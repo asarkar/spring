@@ -28,6 +28,7 @@ class LinkVerifierTest : ShouldSpec() {
                     row("http://www.apache.org/licenses/LICENSE-2.0.txt", true),
                     row("https://glassfish.dev.java.net/nonav/public/CDDL+GPL.html", true),
                     row("http://doesnotexist.blah.com", false),
+                    row("http://www.opensource.org/licenses/cddl1.php", true),
                     row("", false)
             )
 
