@@ -1,0 +1,75 @@
+import org.gradle.api.tasks.bundling.Jar
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
+buildscript {
+    repositories {
+        mavenCentral()
+        maven { url = uri("${extra["springMilestoneRepo"]}") }
+        maven { url = uri("${extra["gradlePluginRepo"]}") }
+    }
+
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${extra["springBootVersion"]}")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${extra["kotlinVersion"]}")
+        classpath("org.jetbrains.kotlin:kotlin-allopen:${extra["kotlinVersion"]}")
+        classpath("gradle.plugin.nl.javadude.gradle.plugins:license-gradle-plugin:${extra["licensePluginVersion"]}")
+    }
+}
+
+apply {
+    plugin("org.springframework.boot")
+    plugin("io.spring.dependency-management")
+    plugin("kotlin")
+    plugin("kotlin-spring")
+    plugin("com.github.hierynomus.license-report") // for testing
+}
+
+version = "1.0.0-SNAPSHOT"
+
+repositories {
+    mavenCentral()
+    maven { url = uri("${extra["springMilestoneRepo"]}") }
+    maven { url = uri("${extra["gradleReleaseRepo"]}") }
+}
+
+tasks.withType<KotlinCompile> {
+    kotlinOptions {
+        includeRuntime = true
+        jvmTarget = "1.8"
+    }
+}
+
+tasks.withType<Jar> {
+    manifest {
+        attributes(mapOf("Start-Class".to("org.abhijitsarkar.Application")))
+    }
+//    from {
+//        String[] include = [
+//                "kotlin-runtime-${version_kotlin}.jar",
+//                "kotlin-stdlib-${version_kotlin}.jar"
+//                ]
+//
+//        configurations.compile
+//                .findAll { include.contains(it.name) }
+//                .collect { it.isDirectory() ? it : zipTree(it) }
+//    }
+}
+
+dependencies {
+    compile("io.projectreactor:reactor-core:${extra["reactorVersion"]}")
+    compile("org.springframework.boot:spring-boot-starter-webflux")
+    compile("org.jetbrains.kotlin:kotlin-stdlib-jre8:${extra["kotlinVersion"]}")
+    compile("org.jetbrains.kotlin:kotlin-reflect:${extra["kotlinVersion"]}")
+    compile("org.springframework.boot:spring-boot-starter-webflux") {
+        exclude(module = "hibernate-validator")
+    }
+    compile("com.fasterxml.jackson.module:jackson-module-kotlin:${extra["jacksonVersion"]}")
+    compile("com.github.ben-manes.caffeine:caffeine:${extra["caffeineVersion"]}")
+    compile("org.eclipse.jgit:org.eclipse.jgit:${extra["jgitVersion"]}")
+    compile("org.gradle:gradle-tooling-api:${extra["gradleToolingApiVersion"]}")
+    compile("org.jsoup:jsoup:${extra["jsoupVersion"]}")
+    testCompile("org.springframework.boot:spring-boot-starter-test")
+    testCompile("io.projectreactor:reactor-test:${extra["reactorVersion"]}")
+    testCompile("io.kotlintest:kotlintest:${extra["kotlinTestVersion"]}")
+    testCompile("org.mockito:mockito-core:${extra["mockitoVersion"]}")
+}

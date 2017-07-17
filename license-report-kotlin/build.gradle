@@ -1,0 +1,61 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
+buildscript {
+    repositories {
+        mavenCentral()
+        maven { url "$springMilestoneRepo" }
+        maven { url "$gradlePluginRepo" }
+    }
+
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
+        classpath("org.jetbrains.kotlin:kotlin-allopen:$kotlinVersion")
+        classpath("gradle.plugin.nl.javadude.gradle.plugins:license-gradle-plugin:$licensePluginVersion")
+    }
+}
+
+apply plugin: "org.springframework.boot"
+apply plugin: "io.spring.dependency-management"
+apply plugin: "kotlin"
+apply plugin: "kotlin-spring"
+apply plugin: "com.github.hierynomus.license-report" // for testing
+
+version = "1.0.0-SNAPSHOT"
+
+repositories {
+    mavenCentral()
+    maven { url "$springMilestoneRepo" }
+    maven { url = "$gradleReleaseRepo" }
+}
+
+tasks.withType(KotlinCompile) {
+    kotlinOptions {
+        includeRuntime = true
+        jvmTarget = "1.8"
+    }
+}
+
+tasks.withType(Jar) {
+    manifest {
+        attributes("Start-Class": "org.abhijitsarkar.ApplicationKt")
+    }
+}
+
+dependencies {
+    compile("io.projectreactor:reactor-core:$reactorVersion")
+    compile("org.springframework.boot:spring-boot-starter-webflux")
+    compile("org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlinVersion")
+    compile("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
+    compile("org.springframework.boot:spring-boot-starter-webflux")
+    compile("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
+    compile("com.github.ben-manes.caffeine:caffeine:$caffeineVersion")
+    compile("org.eclipse.jgit:org.eclipse.jgit:$jgitVersion")
+    compile("org.gradle:gradle-tooling-api:$gradleToolingApiVersion")
+    compile("org.jsoup:jsoup:$jsoupVersion")
+    compile("org.apache.poi:poi-ooxml:$apachePoiVersion")
+    testCompile("org.springframework.boot:spring-boot-starter-test")
+    testCompile("io.projectreactor:reactor-test:$reactorVersion")
+    testCompile("io.kotlintest:kotlintest:$kotlinTestVersion")
+    testCompile("org.mockito:mockito-core:$mockitoVersion")
+}
