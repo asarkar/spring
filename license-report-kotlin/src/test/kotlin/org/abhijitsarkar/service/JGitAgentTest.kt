@@ -17,8 +17,8 @@ class JGitAgentTest : ShouldSpec() {
 
         should("clone test project") {
             val project = Group.Project().apply {
-                sshUrl = "${Paths.get(projectDir().absolutePath, "test-project").toUri()}"
-                name = "test-project"
+                sshUrl = "git@github.com:asarkar/kotlin.git"
+                name = "kotlin"
             }
 
             val groupProperties = GitLabProperties.GroupProperties()

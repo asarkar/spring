@@ -3,10 +3,11 @@ package org.abhijitsarkar.service
 import com.github.benmanes.caffeine.cache.Cache
 import com.github.benmanes.caffeine.cache.Caffeine
 import org.slf4j.LoggerFactory
-import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
+import java.io.IOException
 import java.net.UnknownHostException
+import java.util.*
 
 /**
  * @author Abhijit Sarkar
@@ -44,12 +45,15 @@ internal class LinkVerifierImpl private constructor(val webClient: WebClient, va
                         .retry(2L, {
                             when (it) {
                                 is UnknownHostException -> false
-                                else -> true
+                                is IOException -> true
+                                else -> false
                             }
                         })
-                        .map(ClientResponse::statusCode)
-                        .map { it.value() < 400 }
-                        .doOnSuccess { cache.put(path, it) }
+                        .map { it.statusCode().value() }
+                        .doOnNext { log.debug("Received status code: {} from: {}.", it, link) }
+                        .map { it < 400 }
+                        // https://stackoverflow.com/questions/44930448/reactive-webclient-not-emitting-a-response
+                        .doOnSuccess { if (Objects.nonNull(it)) cache.put(path, it) }
                         .onErrorResume { t -> log.error("Failed to verify link: {}.", link, t); Mono.just(false) }
                 )
     }
