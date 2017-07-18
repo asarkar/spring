@@ -23,8 +23,7 @@ internal class ReportParserImpl constructor(val linkVerifier: LinkVerifier) : Re
     private val log = LoggerFactory.getLogger(ReportParser::class.java)
 
     override fun parseReport(pair: Pair<ProjectName, LicenseDir>): ParallelFlux<Pair<ProjectName, License>> {
-        val projectName = pair.first
-        val licenseDir = pair.second
+        val (projectName, licenseDir) = pair
 
         return Mono.just(Paths.get(licenseDir, "build", "reports", "license", "license-dependency.html"))
                 .map { it.toFile() }

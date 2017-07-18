@@ -31,7 +31,8 @@ class Application(
         val eventPublisher: ApplicationEventPublisher
 ) : CommandLineRunner {
     override fun run(vararg args: String): Unit {
-        val groups = gitLabProperties.groups
+        // Immutable view
+        val groups: Map<String, GitLabProperties.GroupProperties> = gitLabProperties.groups
 
         fun isNotExcluded(projectName: String, groupName: String) =
                 gitLabProperties
