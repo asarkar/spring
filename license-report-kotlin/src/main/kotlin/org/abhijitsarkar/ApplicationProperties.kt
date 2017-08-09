@@ -11,7 +11,7 @@ class ApplicationProperties {
     var timeoutMinutes: Long = 30L
 
     @NestedConfigurationProperty
-    var gradle = GradleProperties()
+    val gradle = GradleProperties()
 
     class GradleProperties {
         var options = ""

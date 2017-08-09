@@ -11,15 +11,15 @@ class GitLabProperties {
     lateinit var baseUrl: String
 
     @NestedConfigurationProperty
-    var groups = mutableMapOf<String, GroupProperties>()
+    val groups = mutableMapOf<String, GroupProperties>()
 
     @NestedConfigurationProperty
-    var connection = ConnectionProperties()
+    val connection = ConnectionProperties()
 
     class GroupProperties {
         lateinit var privateToken: String
-        var excludedProjects = mutableMapOf<String, ProjectProperties>()
-        var includedProjects = mutableMapOf<String, ProjectProperties>()
+        val excludedProjects = mutableMapOf<String, ProjectProperties>()
+        val includedProjects = mutableMapOf<String, ProjectProperties>()
     }
 
     class ProjectProperties {

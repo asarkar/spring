@@ -10,7 +10,11 @@ import reactor.ipc.netty.http.client.HttpClientOptions
  */
 fun webClient(): WebClient {
     fun clientOptionsConsumer(options: HttpClientOptions): Unit {
-        options.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 500)
+        options.apply {
+            option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 1000)
+            option(ChannelOption.SO_TIMEOUT, 3000)
+            disablePool()
+        }
     }
 
     return WebClient.builder()
