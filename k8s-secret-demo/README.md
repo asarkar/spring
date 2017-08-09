@@ -6,21 +6,25 @@
 
 **Stop Minikube**: `minikube stop`
 
-**Launch the application**: `minikube service k8s-secret-demo`
+**Launch the App**: `minikube service k8s-secret-demo`
+
+**Use Minikube Docker Daemon**: `eval $(minikube docker-env)`
+
+**Stop using Minikube Docker Daemon**: `eval $(minikube docker-env -u)`
 
 ## Kubectl
 
 ### Managing secrets
 
-**Create secret from literal**: `kubectl create secret generic demo-secret --from-literal=k8s.demo.secret=whatever`
+**Create Secret from Literal**: `kubectl create secret generic demo-secret --from-literal=k8s.demo.secret=whatever`
 
-**Get secret**: `kubectl get secret demo-secret -o json | jq '.data."k8s.demo.secret"' | sed -e "s/\"//g" | base64 --decode`
+**Get Secret**: `kubectl get secret demo-secret -o json | jq '.data."k8s.demo.secret"' | sed -e "s/\"//g" | base64 --decode`
 
 > Above command uses `jq` (`brew install jq`) to parse the JSON response.
 
-**Delete secret**: `kubectl delete secret demo-secret`
+**Delete Secret**: `kubectl delete secret demo-secret`
 
-**Create secret from file**
+**Create Secret from File**
 ```
 kubectl create secret generic ssh-secret \
   --from-file=id_rsa=/Users/abhijit_sarkar/.ssh/id_rsa \
@@ -30,20 +34,20 @@ kubectl create secret generic ssh-secret \
 
 ### Managing deployments
 
-**Create deployment**: `kubectl create -f deployment.yaml`
+**Create Deployment**: `kubectl create -f deployment.yaml`
 
-**Expose deployment**: `kubectl expose deployment k8s-secret-demo --type=LoadBalancer`
+**Expose Deployment**: `kubectl expose deployment k8s-secret-demo --type=LoadBalancer`
 
-**Delete deployment (and Docker image)**
+**Delete Deployment (and Docker Image)**
 ```
-kubectl delete deployment k8s-secret-demo &amp;&amp; \
+kubectl delete deployment k8s-secret-demo && \
   docker rmi -f $(docker images k8s-secret-demo --format {{.ID}})
 ```
 
-### Building the app
+### Building the App
 
 ```
-./gradlew clean bootJar &amp;&amp; \
+./gradlew clean bootJar && \
   docker build -t k8s-secret-demo .
 ```
 
@@ -53,9 +57,9 @@ kubectl delete deployment k8s-secret-demo &amp;&amp; \
 
 > There is a JSON file created after the Minikube VM is created (I used virtualbox on Linux) -
   `$HOME/.minikube/machines/minikube/config.json` - that contains a lot of config for the VM.
-  
+
 > In this, you can see some interesting config under `HostOptions` -> `EngineOptions` - including the `InsecureRegistry`.
-  
+
 > You can edit this JSON array while your minikube VM is stopped. And, once restarted, it seems to take effect - without deleting the VM.
 
 - [Secret](https://kubernetes.io/docs/concepts/configuration/secret/)
