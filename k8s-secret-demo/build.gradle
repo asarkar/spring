@@ -1,0 +1,63 @@
+buildscript {
+    ext {
+        kotlinVersion = "1.1.3-2"
+        springBootVersion = "2.0.0.M3"
+        jgitVersion = "4.8.0.201706111038-r"
+        kotlinTestVersion = "2.0.4"
+        mockitoVersion = "2.8.47"
+        nettyVersion = "4.1.13.Final"
+    }
+    repositories {
+        mavenCentral()
+        maven { url "https://repo.spring.io/milestone" }
+    }
+    dependencies {
+        classpath(
+                "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}",
+                "org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlinVersion}",
+                "org.jetbrains.kotlin:kotlin-allopen:${kotlinVersion}"
+        )
+    }
+}
+
+apply plugin: "kotlin"
+apply plugin: "kotlin-spring"
+apply plugin: "org.springframework.boot"
+apply plugin: "io.spring.dependency-management"
+
+version = "0.0.1-SNAPSHOT"
+sourceCompatibility = 1.8
+compileKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+compileTestKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+
+repositories {
+    mavenCentral()
+    maven { url "https://repo.spring.io/milestone" }
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.boot:spring-boot-dependencies:${springBootVersion}"
+    }
+}
+
+dependencies {
+    compile(
+            "org.springframework.boot:spring-boot-starter-webflux",
+            "org.jetbrains.kotlin:kotlin-stdlib-jre8:${kotlinVersion}",
+            "org.eclipse.jgit:org.eclipse.jgit:${jgitVersion}"
+    )
+    runtime(
+            "org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}",
+            "io.netty:netty-transport-native-epoll:${nettyVersion}:linux-x86_64@jar"
+    )
+    testCompile(
+            "org.springframework.boot:spring-boot-starter-test",
+            "io.kotlintest:kotlintest:$kotlinTestVersion",
+            "org.mockito:mockito-core:$mockitoVersion"
+    )
+}

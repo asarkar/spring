@@ -1,0 +1,37 @@
+kind: Deployment
+apiVersion: apps/v1beta1
+metadata:
+  name: k8s-secret-demo
+  namespace: default
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: k8s-secret-demo
+    spec:
+      volumes:
+      - name: ssh-volume
+        secret:
+          secretName: ssh-secret
+          defaultMode: 0600
+      containers:
+      - name: k8s-secret-demo
+        image: k8s-secret-demo
+        ports:
+        - containerPort: 8080
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+        - name: ssh-volume
+          readOnly: true
+          mountPath: /root/.ssh
+        env:
+        - name: PROJECT_NAME
+          valueFrom:
+            secretKeyRef:
+              name: demo-secret
+              key: k8s.demo.secret
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
