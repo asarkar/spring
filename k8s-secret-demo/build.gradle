@@ -14,14 +14,12 @@ buildscript {
     dependencies {
         classpath(
                 "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}",
-                "org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlinVersion}",
-                "org.jetbrains.kotlin:kotlin-allopen:${kotlinVersion}"
+                "org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlinVersion}"
         )
     }
 }
 
 apply plugin: "kotlin"
-apply plugin: "kotlin-spring"
 apply plugin: "org.springframework.boot"
 apply plugin: "io.spring.dependency-management"
 

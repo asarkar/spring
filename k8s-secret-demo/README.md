@@ -12,6 +12,8 @@
 
 **Stop using Minikube Docker Daemon**: `eval $(minikube docker-env -u)`
 
+**Minikube Dashboard**: `minikube dashboard`
+
 ## Kubectl
 
 ### Managing secrets
