@@ -1,3 +1,0 @@
-outbound.http:
-  hostAndPort: 'localhost:22222'
-  path: /test

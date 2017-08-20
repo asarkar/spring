@@ -1,4 +1,0 @@
-camel.springboot.jmxEnabled: false
-spring.profiles.active: inbound-s3,outbound-http
-
-
