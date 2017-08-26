@@ -1,0 +1,39 @@
+buildscript {
+    ext {
+        springBootVersion = "1.5.6.RELEASE"
+        lombokVersion = "1.16.16"
+    }
+    ext["hibernate.version"] = "5.2.10.Final"
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion")
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'org.springframework.boot'
+
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compileOnly("org.projectlombok:lombok:$lombokVersion")
+    compile(
+            "org.springframework.boot:spring-boot-starter-web",
+            "org.springframework.boot:spring-boot-starter-data-couchbase",
+            "org.springframework.boot:spring-boot-starter-data-jpa"
+    )
+    runtime("mysql:mysql-connector-java")
+    testCompile("org.springframework.boot:spring-boot-starter-test")
+}
+
+bootRun {
+    systemProperties = System.properties
+}
