@@ -11,6 +11,9 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import java.time.OffsetDateTime;
+
+import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME;
 
 /**
  * @author Abhijit Sarkar
@@ -33,11 +36,21 @@ public class Beer {
     @JoinColumn(name = "brewery_id")
     @JsonIgnore
     private Brewery brewery;
+    @JsonIgnore
     private String updated;
     @Column(length = 999)
     private String description;
     private String style;
     private String category;
+
+    @JsonProperty("updated")
+    private String getUpdated() {
+        return OffsetDateTime.now().format(ISO_OFFSET_DATE_TIME);
+    }
+
+    private void setUpdated(String updated) {
+        this.updated = updated;
+    }
 
     @JsonProperty("brewery_id")
     public String getBrewery() {
