@@ -2,6 +2,8 @@ buildscript {
     ext {
         springBootVersion = "1.5.6.RELEASE"
         lombokVersion = "1.16.16"
+        slf4jVersion = "1.7.25"
+        logbackVersion = "1.2.3"
     }
     ext["hibernate.version"] = "5.2.10.Final"
     repositories {
@@ -30,7 +32,12 @@ dependencies {
             "org.springframework.boot:spring-boot-starter-data-couchbase",
             "org.springframework.boot:spring-boot-starter-data-jpa"
     )
-    runtime("mysql:mysql-connector-java")
+    runtime(
+            "mysql:mysql-connector-java",
+            "org.slf4j:slf4j-api:$slf4jVersion",
+            "ch.qos.logback:logback-classic:$logbackVersion",
+            "ch.qos.logback:logback-core:$logbackVersion"
+    )
     testCompile("org.springframework.boot:spring-boot-starter-test")
 }
 

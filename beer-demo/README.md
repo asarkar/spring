@@ -1,9 +1,11 @@
 **Start Databases**
 
 ```
-docker run -d --name cb --rm -p 8091-8094:8091-8094 -p 11210:11210 couchbase
+docker run -d --name couchbase --rm -p 8091-8094:8091-8094 -p 11210:11210 couchbase
 docker run --name mysql --rm -p 3306:3306 -e MYSQL_DATABASE=beer_demo -e MYSQL_ROOT_PASSWORD=beer -d mysql
 ```
+
+> Couchbase requires further manual set up. See [this](https://hub.docker.com/r/couchbase/server/).
 
 **Connect to MySQL Console** (if desired)
 ```

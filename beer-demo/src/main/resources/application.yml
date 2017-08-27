@@ -1,5 +1,8 @@
 spring:
   profiles.active: jpa, couchbase
+logging.level:
+  org.springframework: WARN
+  org.abhijitsarkar.spring: DEBUG
 ---
 spring:
   profiles: jpa
@@ -16,4 +19,13 @@ datasource:
   username: root
   password: beer
   driver-class-name: com.mysql.jdbc.Driver
+---
+spring:
+  profiles: couchbase
+logging.level.org.springframework.data.couchbase.repository.query: DEBUG
+couchbase:
+  adminUsername: admin
+  adminPassword: admin123
+  bucketName: beer_sample
+  bucketPassword:
 ---
