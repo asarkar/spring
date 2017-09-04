@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import rx.Observable;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import static java.util.Arrays.asList;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
@@ -34,7 +35,18 @@ public class BeerDemoController {
 
     @GetMapping(path = "/beers/{id}", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<Beer> beer(@PathVariable("id") String id) {
-        return findOne(id, beerRepository);
+        return beerRepository.findOne(id)
+                .map(ResponseEntity::ok)
+                .onErrorReturn(t -> {
+                    if (t instanceof NoSuchElementException) {
+                        return ResponseEntity.notFound().build();
+                    } else {
+                        return ResponseEntity.status(INTERNAL_SERVER_ERROR).build();
+                    }
+                })
+                .timeout(TIMEOUT_MILLIS, MILLISECONDS)
+                .toBlocking()
+                .value();
     }
 
     @GetMapping(path = "/breweries/{id}", produces = APPLICATION_JSON_VALUE)
@@ -57,16 +69,6 @@ public class BeerDemoController {
     @GetMapping(path = "/breweries", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<List<Brewery>> breweries() {
         return findAll(breweryRepository, "brewery");
-    }
-
-    private <T> ResponseEntity<T> findOne(String id, CouchbaseRepository<T> repository) {
-        return repository.findOne(id)
-                .map(ResponseEntity::ok)
-                .onErrorReturn(t -> ResponseEntity.status(INTERNAL_SERVER_ERROR).build())
-                .doOnError(t -> log.error("Failed to find element with id: {}", id, t))
-                .timeout(TIMEOUT_MILLIS, MILLISECONDS)
-                .toBlocking()
-                .value();
     }
 
     private <T> ResponseEntity<List<T>> findAll(CouchbaseRepository<T> repository, String type) {

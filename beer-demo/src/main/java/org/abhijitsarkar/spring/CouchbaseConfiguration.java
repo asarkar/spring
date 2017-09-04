@@ -22,6 +22,7 @@ import rx.Observable;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -134,14 +135,14 @@ public class CouchbaseConfiguration {
 
                                     return save(toJsonDocuments(list2, Beer::getName, objectMapper));
                                 } catch (IOException e) {
-                                    log.error("Failed to insert beers.", e);
-                                    return Observable.empty();
+                                    return Observable.error(e);
                                 }
                             })
                             .toCompletable()
+                            .doOnError(t -> log.error("Failed to initializing database.", t))
                             .await(1, TimeUnit.MINUTES);
                 } catch (IOException e) {
-                    log.error("Failed to insert breweries.", e);
+                    throw new UncheckedIOException(e);
                 }
             }
         }
