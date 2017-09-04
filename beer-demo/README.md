@@ -1,10 +1,11 @@
 **Start Couchbase**
 
 ```
-docker run -d --name couchbase -p 8091-8094:8091-8094 -p 11210:11210 couchbase
+docker run -d --name couchbase -p 8091-8094:8091-8094 -p 11210:11210 asarkar/couchbase:debian-jessie
 ```
 
-> Couchbase requires further manual set up. See [this](https://hub.docker.com/r/couchbase/server/).
+> Official Couchbase requires [manual set up]((https://hub.docker.com/r/couchbase/server/)), thus I customized
+my own image that's development ready out of the box.
 
 **Run App**
 ```

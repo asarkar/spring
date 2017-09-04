@@ -101,7 +101,8 @@ public class CouchbaseAsyncBucketFactory {
                                 return b;
                             })
                             .switchIfEmpty(cluster.openBucket(bucket.getName(), bucket.getPassword())
-                                    .timeout(bucket.getBucketOpenTimeoutMillis(), MILLISECONDS));
+                                    .timeout(bucket.getBucketOpenTimeoutMillis(), MILLISECONDS))
+                            .doOnError(t -> log.error("Failed to open bucket: {}.", bucket.getName(), t));
                 })
                 .toSingle();
     }

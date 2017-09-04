@@ -15,6 +15,7 @@ import rx.Observable;
 
 import java.util.List;
 
+import static java.util.Arrays.asList;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -37,7 +38,14 @@ public class BeerDemoController {
 
     @GetMapping(path = "/breweries/{id}", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<Brewery> brewery(@PathVariable("id") String id) {
-        return findOne(id, breweryRepository);
+        return breweryRepository.findAll(asList(id), "type", "brewery")
+                .first()
+                .map(ResponseEntity::ok)
+                .onErrorReturn(t -> ResponseEntity.notFound().build())
+                .switchIfEmpty(Observable.just(ResponseEntity.notFound().build()))
+                .timeout(TIMEOUT_MILLIS, MILLISECONDS)
+                .toBlocking()
+                .single();
     }
 
     @GetMapping(path = "/beers", produces = APPLICATION_JSON_VALUE)

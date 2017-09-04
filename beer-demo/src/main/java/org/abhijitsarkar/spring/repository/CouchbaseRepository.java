@@ -8,10 +8,12 @@ import com.couchbase.client.java.query.SimpleN1qlQuery;
 import com.couchbase.client.java.query.dsl.path.AsPath;
 import com.couchbase.client.java.query.dsl.path.GroupByPath;
 import com.couchbase.client.java.query.dsl.path.LetPath;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import rx.Observable;
 import rx.Single;
 
-import java.util.Collection;
+import java.util.List;
 
 import static com.couchbase.client.java.query.Select.select;
 import static com.couchbase.client.java.query.dsl.Expression.i;
@@ -24,18 +26,21 @@ import static org.abhijitsarkar.spring.CouchbaseQueryUtil.executeN1qlQuery;
  * @author Abhijit Sarkar
  */
 public interface CouchbaseRepository<T> {
+    Logger log = LoggerFactory.getLogger(CouchbaseRepository.class);
+
     default Single<T> findOne(String id) {
         return asyncBucket()
                 .flatMap(bucket -> bucket.get(id, RawJsonDocument.class).toSingle())
                 .map(RawJsonDocument::content)
-                .flatMap(this::convert);
+                .flatMap(this::convert)
+                .doOnError(t -> log.error("Failed to look up doc with id: {}.", id, t));
     }
 
     default Observable<T> findAll(String typeField, String type) {
         return findAll(emptyList(), typeField, type);
     }
 
-    default Observable<T> findAll(final Collection<String> ids, String typeField, String type) {
+    default Observable<T> findAll(final List<String> ids, String typeField, String type) {
         return asyncBucket()
                 .flatMapObservable(bucket -> {
                     AsPath temp1 = select(path(bucket.name(), "*"))//select(arrayAgg(i(bucket.name())))
@@ -53,6 +58,8 @@ public interface CouchbaseRepository<T> {
 
                     return executeN1qlQuery(bucket, query);
                 })
+                .doOnError(t -> log.error("Failed to query docs with ids: {}, typeField: {} and type: {}.",
+                        ids, typeField, type, t))
                 .flatMap(row -> convert(row.value().toString()).toObservable());
     }
 
