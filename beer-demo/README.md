@@ -1,20 +1,14 @@
-**Start Databases**
+**Start Couchbase**
 
 ```
-docker run -d --name couchbase --rm -p 8091-8094:8091-8094 -p 11210:11210 couchbase
-docker run --name mysql --rm -p 3306:3306 -e MYSQL_DATABASE=beer_demo -e MYSQL_ROOT_PASSWORD=beer -d mysql
+docker run -d --name couchbase -p 8091-8094:8091-8094 -p 11210:11210 couchbase
 ```
 
 > Couchbase requires further manual set up. See [this](https://hub.docker.com/r/couchbase/server/).
 
-**Connect to MySQL Console** (if desired)
-```
-docker exec -it mysql sh -c 'exec mysql -uroot -pbeer'
-```
-
 **Run App**
 ```
-beer-demo$ ./gradlew clean bootRun -Dspring.profiles.active=[couchbase|jpa|couchbase,jpa]
+beer-demo$ ./gradlew clean bootRun [-Dcouchbase.initialize=true|false]
 ```
 
 **Find a Beer**

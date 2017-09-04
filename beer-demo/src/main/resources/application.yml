@@ -1,31 +1,9 @@
-spring:
-  profiles.active: jpa, couchbase
 logging.level:
   org.springframework: WARN
+  com.couchbase.client: WARN
   org.abhijitsarkar.spring: DEBUG
----
-spring:
-  profiles: jpa
-  jpa:
-    generate-ddl: false
-    show-sql: true
-    properties.hibernate.dialect: org.hibernate.dialect.MySQL5Dialect
-    hibernate:
-      naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
-      ddl-auto: update
-datasource:
-  type: tomcat-jdbc
-  url: jdbc:mysql://localhost/beer_demo?useSSL=false
-  username: root
-  password: beer
-  driver-class-name: com.mysql.jdbc.Driver
----
-spring:
-  profiles: couchbase
-logging.level.org.springframework.data.couchbase.repository.query: DEBUG
 couchbase:
   adminUsername: admin
   adminPassword: admin123
-  bucketName: beer_sample
-  bucketPassword:
----
+  bucket:
+    name: beer_sample

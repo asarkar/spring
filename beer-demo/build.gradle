@@ -4,8 +4,9 @@ buildscript {
         lombokVersion = "1.16.16"
         slf4jVersion = "1.7.25"
         logbackVersion = "1.2.3"
+        couchbaseClientVersion = "2.4.7"
+        couchbaseCoreIOVersion = "1.4.7"
     }
-    ext["hibernate.version"] = "5.2.10.Final"
     repositories {
         mavenCentral()
     }
@@ -29,11 +30,10 @@ dependencies {
     compileOnly("org.projectlombok:lombok:$lombokVersion")
     compile(
             "org.springframework.boot:spring-boot-starter-web",
-            "org.springframework.boot:spring-boot-starter-data-couchbase",
-            "org.springframework.boot:spring-boot-starter-data-jpa"
+            "com.couchbase.client:core-io:$couchbaseCoreIOVersion",
+            "com.couchbase.client:java-client:$couchbaseClientVersion",
     )
     runtime(
-            "mysql:mysql-connector-java",
             "org.slf4j:slf4j-api:$slf4jVersion",
             "ch.qos.logback:logback-classic:$logbackVersion",
             "ch.qos.logback:logback-core:$logbackVersion"
@@ -43,4 +43,9 @@ dependencies {
 
 bootRun {
     systemProperties = System.properties
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+    options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
 }
