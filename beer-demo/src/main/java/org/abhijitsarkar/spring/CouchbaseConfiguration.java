@@ -118,7 +118,7 @@ public class CouchbaseConfiguration {
         @EventListener
         void doWhenApplicationIsReady(ApplicationReadyEvent event) {
             if (initialize) {
-                log.debug("Initializing database.");
+                log.info("Initializing database.");
 
                 ObjectMapper objectMapper = new ObjectMapper();
 
@@ -134,7 +134,7 @@ public class CouchbaseConfiguration {
 
                                     return save(toJsonDocuments(list2, Beer::getName, objectMapper));
                                 } catch (IOException e) {
-                                    log.error("Failed to initialize beers.", e);
+                                    log.error("Failed to insert beers.", e);
                                     return Observable.empty();
                                 }
                             })

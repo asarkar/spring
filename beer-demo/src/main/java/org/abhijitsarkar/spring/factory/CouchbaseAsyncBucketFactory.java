@@ -42,11 +42,12 @@ public class CouchbaseAsyncBucketFactory {
     }
 
     public void close() {
-        log.debug("Closing bucket: {}.", couchbaseProperties.getBucket().getName());
+        log.info("Closing bucket: {}.", couchbaseProperties.getBucket().getName());
 
         asyncBucket
                 .flatMapObservable(AsyncBucket::close)
                 .toCompletable()
+                .doOnError(t -> log.error("Failed to close bucket: {}.", couchbaseProperties.getBucket().getName(), t))
                 .await(couchbaseProperties.getBucket().getBucketCloseTimeoutMillis(), MILLISECONDS);
     }
 
@@ -65,13 +66,13 @@ public class CouchbaseAsyncBucketFactory {
 
                     return clusterManager.hasBucket(bucket.getName())
                             .map(hasBucket -> {
-                                log.debug("Bucket: {} is: {}.", bucket.getName(),
+                                log.info("Bucket: {} is: {}.", bucket.getName(),
                                         hasBucket ? "already present" : "absent");
                                 return !hasBucket && bucket.isCreateIfMissing();
                             })
                             .filter(Boolean::booleanValue)
                             .flatMap(x -> {
-                                log.debug("Creating bucket: {}.", bucket.getName());
+                                log.info("Creating bucket: {}.", bucket.getName());
                                 return clusterManager.insertBucket(
                                         DefaultBucketSettings.builder()
                                                 .name(bucket.getName())
@@ -88,14 +89,14 @@ public class CouchbaseAsyncBucketFactory {
                                 SimpleN1qlQuery query = N1qlQuery.simple(statement);
 
                                 // create index on separate thread, but wait first for bucket to be opened
-                                Observable.just(1)
+                                Observable.just(0L)
                                         .observeOn(Schedulers.io())
+                                        .doOnNext(i -> log.info("Creating primary index."))
                                         .flatMap(i ->
                                                 Observable.timer(bucket.getBucketOpenTimeoutMillis(), MILLISECONDS)
                                                         .zipWith(executeN1qlQuery(b, query), (j, row) -> row))
                                         .toCompletable()
-                                        .doOnTerminate(() -> log.debug("Subscribed on thread: {}.",
-                                                Thread.currentThread().getName()))
+                                        .doOnError(t -> log.error("Failed to create primary index.", t))
                                         .await(bucket.getBucketOpenTimeoutMillis(), MILLISECONDS);
 
                                 return b;

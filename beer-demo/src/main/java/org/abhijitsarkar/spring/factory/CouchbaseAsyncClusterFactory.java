@@ -53,17 +53,18 @@ public class CouchbaseAsyncClusterFactory {
     }
 
     public void disconnect() {
-        log.debug("Disconnecting from Couchbase cluster: {}.", nodes);
+        log.info("Disconnecting from Couchbase cluster: {}.", nodes);
         asyncCluster
                 .flatMapObservable(AsyncCluster::disconnect)
                 .toCompletable()
+                .doOnError(t -> log.error("Failed to disconnect from Couchbase cluster: {}.", nodes, t))
                 .await(couchbaseProperties.getClusterDisconnectTimeoutMillis(), MILLISECONDS);
     }
 
     private final Single<AsyncCluster> newInstance() {
         return Single.create((SingleSubscriber<? super AsyncCluster> subscriber) -> {
             try {
-                log.debug("Connecting to Couchbase cluster: {}.", nodes);
+                log.info("Connecting to Couchbase cluster: {}.", nodes);
                 AsyncCluster asyncCluster = CouchbaseAsyncCluster.create(environment, nodes);
                 subscriber.onSuccess(asyncCluster);
             } catch (Exception e) {

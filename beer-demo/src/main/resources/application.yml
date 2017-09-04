@@ -1,7 +1,7 @@
 logging.level:
   org.springframework: WARN
   com.couchbase.client: WARN
-  org.abhijitsarkar.spring: DEBUG
+  org.abhijitsarkar.spring: INFO
 couchbase:
   adminUsername: admin
   adminPassword: admin123

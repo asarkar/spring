@@ -17,6 +17,7 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 /**
@@ -41,7 +42,7 @@ public class BeerDemoController {
         return breweryRepository.findAll(asList(id), "type", "brewery")
                 .first()
                 .map(ResponseEntity::ok)
-                .onErrorReturn(t -> ResponseEntity.notFound().build())
+                .onErrorReturn(t -> ResponseEntity.status(INTERNAL_SERVER_ERROR).build())
                 .switchIfEmpty(Observable.just(ResponseEntity.notFound().build()))
                 .timeout(TIMEOUT_MILLIS, MILLISECONDS)
                 .toBlocking()
@@ -61,7 +62,7 @@ public class BeerDemoController {
     private <T> ResponseEntity<T> findOne(String id, CouchbaseRepository<T> repository) {
         return repository.findOne(id)
                 .map(ResponseEntity::ok)
-                .onErrorReturn(t -> ResponseEntity.notFound().build())
+                .onErrorReturn(t -> ResponseEntity.status(INTERNAL_SERVER_ERROR).build())
                 .doOnError(t -> log.error("Failed to find element with id: {}", id, t))
                 .timeout(TIMEOUT_MILLIS, MILLISECONDS)
                 .toBlocking()
@@ -72,7 +73,7 @@ public class BeerDemoController {
         return repository.findAll("type", type)
                 .toList()
                 .map(ResponseEntity::ok)
-                .onErrorReturn(t -> ResponseEntity.notFound().build())
+                .onErrorReturn(t -> ResponseEntity.status(INTERNAL_SERVER_ERROR).build())
                 .switchIfEmpty(Observable.just(ResponseEntity.notFound().build()))
                 .timeout(TIMEOUT_MILLIS, MILLISECONDS)
                 .toBlocking()
