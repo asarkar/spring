@@ -21,3 +21,13 @@ beer-demo$ curl -H "Accept: application/json" "http://localhost:8080/beers/Doubl
 ```
 beer-demo$ curl -H "Accept: application/json" "http://localhost:8080/breweries/21st%20Amendment%20Brewery%20Cafe"
 ```
+
+**Find All Beers**
+```
+beer-demo$ curl -H "Accept: application/json" "http://localhost:8080/beers"
+```
+
+**Find All Breweries**
+```
+beer-demo$ curl -H "Accept: application/json" "http://localhost:8080/breweries"
+```
