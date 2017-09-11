@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>html { font-size: 14px; font-family: Arial, Helvetica, sans-serif; }</style>
+    <title>Pinterest</title>
+    <link rel="stylesheet" href="styles/kendo.bootstrap-v4.min.css"/>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/angular.min.js"></script>
+    <script src="js/kendo.all.min.js"></script>
+    <link rel="stylesheet" href="styles/examples-offline.css">
+    <script src="js/console.js"></script>
+</head>
+<body>
+<div id="main" ng-app="pinterest">
+    <div class="demo-section k-content" ng-controller="PinterestController">
+        <div>
+            <h4>Board Name</h4>
+            <input type="text" id="board" name="board" class="k-textbox" required style="width: 400px;"
+                   ng-model="board" ng-change="onChange()"/>
+            <p class="demo-hint">Will be created if doesn't exist</p>
+            <p ng-show="showErrorMsg" class="invalid">Oops! We need the board name.</p>
+        </div>
+        <div style="padding-top: 2em;">
+            <h4>Upload files</h4>
+            <!-- http://docs.telerik.com/kendo-ui/api/javascript/ui/upload -->
+            <input name="files"
+                   type="file"
+                   kendo-upload
+                   k-async="{ saveUrl: 'willBeReplaced', autoUpload: false }"
+                   k-upload="onUpload"
+            />
+        </div>
+    </div>
+</div>
+<style>
+  .invalid {
+      text-align: left;
+      color: red;
+  }
+
+
+</style>
+<script src="js/app.js"></script>
+</body>
+</html>

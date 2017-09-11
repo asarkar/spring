@@ -1,0 +1,4 @@
+pinterest:
+  clientId: ${PINTEREST_CLIENT_ID}
+  clientSecret: ${PINTEREST_CLIENT_SECRET}
+  cacheSpec: ${PINTEREST_CACHE_SPEC:maximumSize=100,expireAfterWrite=2m}
