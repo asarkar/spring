@@ -1,12 +1,13 @@
-package org.abhijitsarkar.spring.web;
+package org.abhijitsarkar.spring.beer.web;
 
+import com.netflix.hystrix.exception.HystrixRuntimeException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.abhijitsarkar.spring.domain.Beer;
-import org.abhijitsarkar.spring.domain.Brewery;
-import org.abhijitsarkar.spring.repository.CouchbaseBeerRepository;
-import org.abhijitsarkar.spring.repository.CouchbaseBreweryRepository;
-import org.abhijitsarkar.spring.repository.CouchbaseRepository;
+import org.abhijitsarkar.spring.beer.domain.Beer;
+import org.abhijitsarkar.spring.beer.domain.Brewery;
+import org.abhijitsarkar.spring.beer.repository.CouchbaseBeerRepository;
+import org.abhijitsarkar.spring.beer.repository.CouchbaseBreweryRepository;
+import org.abhijitsarkar.spring.beer.repository.CouchbaseRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,6 +21,7 @@ import static java.util.Arrays.asList;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.util.CollectionUtils.isEmpty;
 
 /**
  * @author Abhijit Sarkar
@@ -38,7 +40,7 @@ public class BeerDemoController {
         return beerRepository.findOne(id)
                 .map(ResponseEntity::ok)
                 .onErrorReturn(t -> {
-                    if (t instanceof NoSuchElementException) {
+                    if (t instanceof NoSuchElementException || t instanceof HystrixRuntimeException) {
                         return ResponseEntity.notFound().build();
                     } else {
                         return ResponseEntity.status(INTERNAL_SERVER_ERROR).build();
@@ -51,10 +53,15 @@ public class BeerDemoController {
 
     @GetMapping(path = "/breweries/{id}", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<Brewery> brewery(@PathVariable("id") String id) {
-        return breweryRepository.findAll(asList(id), "type", "brewery")
+        return breweryRepository.findAllByIds(asList(id), "type", "brewery")
                 .first()
                 .map(ResponseEntity::ok)
-                .onErrorReturn(t -> ResponseEntity.status(INTERNAL_SERVER_ERROR).build())
+                .onErrorReturn(t -> {
+                    if (t instanceof HystrixRuntimeException) {
+                        return ResponseEntity.notFound().build();
+                    }
+                    return ResponseEntity.status(INTERNAL_SERVER_ERROR).build();
+                })
                 .switchIfEmpty(Observable.just(ResponseEntity.notFound().build()))
                 .timeout(TIMEOUT_MILLIS, MILLISECONDS)
                 .toBlocking()
@@ -74,8 +81,14 @@ public class BeerDemoController {
     private <T> ResponseEntity<List<T>> findAll(CouchbaseRepository<T> repository, String type) {
         return repository.findAll("type", type)
                 .toList()
+                .filter(l -> !isEmpty(l))
                 .map(ResponseEntity::ok)
-                .onErrorReturn(t -> ResponseEntity.status(INTERNAL_SERVER_ERROR).build())
+                .onErrorReturn(t -> {
+                    if (t instanceof HystrixRuntimeException) {
+                        return ResponseEntity.notFound().build();
+                    }
+                    return ResponseEntity.status(INTERNAL_SERVER_ERROR).build();
+                })
                 .switchIfEmpty(Observable.just(ResponseEntity.notFound().build()))
                 .timeout(TIMEOUT_MILLIS, MILLISECONDS)
                 .toBlocking()

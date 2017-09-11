@@ -4,8 +4,10 @@ buildscript {
         lombokVersion = "1.16.16"
         slf4jVersion = "1.7.25"
         logbackVersion = "1.2.3"
-        couchbaseClientVersion = "2.4.7"
-        couchbaseCoreIOVersion = "1.4.7"
+        couchbaseClientVersion = "2.5.0"
+        couchbaseCoreIOVersion = "1.5.0"
+        rxjavaVersion = "1.3.2"
+        hystrixVersion = "1.5.12"
     }
     repositories {
         mavenCentral()
@@ -26,12 +28,22 @@ repositories {
     mavenCentral()
 }
 
+dependencyManagement {
+//    imports {
+//        mavenBom "org.springframework.cloud:spring-cloud-dependencies:$springCloudVersion"
+//    }
+    dependencies {
+        dependency "io.reactivex:rxjava:$rxjavaVersion"
+    }
+}
+
 dependencies {
     compileOnly("org.projectlombok:lombok:$lombokVersion")
     compile(
             "org.springframework.boot:spring-boot-starter-web",
             "com.couchbase.client:core-io:$couchbaseCoreIOVersion",
             "com.couchbase.client:java-client:$couchbaseClientVersion",
+            "com.netflix.hystrix:hystrix-core:$hystrixVersion"
     )
     runtime(
             "org.slf4j:slf4j-api:$slf4jVersion",

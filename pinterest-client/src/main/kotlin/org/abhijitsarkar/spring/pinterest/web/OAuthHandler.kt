@@ -1,8 +1,8 @@
 package org.abhijitsarkar.spring.pinterest.web
 
-import org.abhijitsarkar.spring.pinterest.client.Pinterest
 import org.abhijitsarkar.spring.pinterest.client.Pinterest.PinterestJsonFormat.AccessTokenRequest
 import org.abhijitsarkar.spring.pinterest.client.Pinterest.PinterestJsonFormat.AccessTokenResponse
+import org.abhijitsarkar.spring.pinterest.service.PinterestService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
@@ -19,7 +19,7 @@ import java.net.URI
  * @author Abhijit Sarkar
  */
 @Component
-class OAuthHandler(val pinterest: Pinterest, val cache: Cache) {
+class OAuthHandler(val pinterestService: PinterestService, val cache: Cache) {
     val logger: Logger = LoggerFactory.getLogger(OAuthHandler::class.java)
     val state = "state"
 
@@ -50,7 +50,7 @@ class OAuthHandler(val pinterest: Pinterest, val cache: Cache) {
                     .toMono()
                     .flatMap { if (it.isPresent) Mono.just(it.get()) else Mono.empty() }
                     .doOnNext { logger.debug("Received access code: $it.") }
-                    .flatMap { pinterest.getAccessToken(AccessTokenRequest(clientId, clientSecret, it)) }
+                    .flatMap { pinterestService.getAccessToken(AccessTokenRequest(clientId, clientSecret, it)) }
                     .map(AccessTokenResponse::accessToken)
                     .doOnNext {
                         logger.debug("Received access token: {}.", it)

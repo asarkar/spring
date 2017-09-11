@@ -28,5 +28,5 @@ class OAuthFilter(val cache: Cache) : HandlerFilterFunction<ServerResponse, Serv
     }
 
     private fun shouldFilter(request: ServerRequest) =
-            (request.path().startsWith(PINTEREST) && cache.get(ACCESS_TOKEN_CACHE_KEY, String::class.java) != null)
+            (request.path() == PIN && cache.get(ACCESS_TOKEN_CACHE_KEY, String::class.java) != null)
 }

@@ -25,7 +25,7 @@ import org.abhijitsarkar.spring.pinterest.client.Pinterest.PinterestJsonFormat.F
 import org.abhijitsarkar.spring.pinterest.client.Pinterest.PinterestJsonFormat.FindUserRequest
 import org.abhijitsarkar.spring.pinterest.client.Pinterest.PinterestJsonFormat.FindUserResponse
 import org.abhijitsarkar.spring.pinterest.client.Pinterest.PinterestJsonFormat.ResponseWrapper
-import org.springframework.core.io.buffer.DataBufferUtils
+import org.abhijitsarkar.spring.pinterest.reduceStream
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -115,13 +115,7 @@ class PinterestDefaultImpl() : Pinterest {
         return when {
             this.statusCode().isNotFound() -> return Mono.empty()
             this.statusCode().isError -> this.body(BodyExtractors.toDataBuffers())
-                    .reduce { obj, buffers -> obj.write(buffers) }
-                    .map { dataBuffer ->
-                        dataBuffer.readableByteCount()
-                                .let { ByteArray(it) }
-                                .also { dataBuffer.read(it) }
-                                .apply { DataBufferUtils.release(dataBuffer) }
-                    }
+                    .let { reduceStream(it) }
                     .map { bodyBytes ->
                         val msg = "${this.statusCode().value()} ${this.statusCode().reasonPhrase}"
                         val charset = this.headers().contentType()

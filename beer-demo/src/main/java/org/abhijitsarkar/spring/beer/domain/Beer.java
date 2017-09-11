@@ -1,11 +1,10 @@
-package org.abhijitsarkar.spring.domain;
+package org.abhijitsarkar.spring.beer.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import java.time.OffsetDateTime;
-import java.util.List;
 
 import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME;
 
@@ -13,20 +12,20 @@ import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME;
  * @author Abhijit Sarkar
  */
 @Data
-public class Brewery {
+public class Beer {
     private String name;
-    private String city;
-    private String state;
-    private String code;
-    private String country;
-    private String phone;
-    private String website;
+    private Float abv;
+    private Float ibu;
+    private Float srm;
+    private Float upc;
     private String type;
+    @JsonIgnore
+    private Brewery brewery;
     @JsonIgnore
     private String updated;
     private String description;
-    private List<String> address;
-    private Geo geo;
+    private String style;
+    private String category;
 
     @JsonProperty("updated")
     private String getUpdated() {
@@ -37,12 +36,13 @@ public class Brewery {
         this.updated = updated;
     }
 
-    @Data
-    static class Geo {
-        private String accuracy;
-        @JsonProperty("lat")
-        private Double latitude;
-        @JsonProperty("lon")
-        private Double longitude;
+    @JsonProperty("brewery_id")
+    public String getBrewery() {
+        return brewery.getName();
+    }
+
+    public void setBrewery(String name) {
+        brewery = new Brewery();
+        brewery.setName(name);
     }
 }

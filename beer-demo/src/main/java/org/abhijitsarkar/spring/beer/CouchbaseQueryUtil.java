@@ -1,4 +1,4 @@
-package org.abhijitsarkar.spring;
+package org.abhijitsarkar.spring.beer;
 
 import com.couchbase.client.core.CouchbaseException;
 import com.couchbase.client.core.lang.Tuple;
@@ -14,11 +14,11 @@ import rx.Observable;
  * @author Abhijit Sarkar
  */
 @Slf4j
-public class CouchbaseQueryUtil {
+public final class CouchbaseQueryUtil {
     private CouchbaseQueryUtil() {
     }
 
-    public static final Observable<AsyncN1qlQueryRow> executeN1qlQuery(AsyncBucket bucket, N1qlQuery query) {
+    public static Observable<AsyncN1qlQueryRow> executeN1qlQuery(AsyncBucket bucket, N1qlQuery query) {
         log.debug("Executing query: {}.", query.statement());
 
         return bucket.query(query)
