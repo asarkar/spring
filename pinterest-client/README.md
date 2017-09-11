@@ -1,7 +1,7 @@
 Uploads multiple files to a Pinterest board; apparently such a common feature isn't supported by default by Pinterest
 (*rolls eyes* ).
 
-Start here: https://pinterest-client.herokuapp.com/oauth
+Start here: https://pinterest-client.herokuapp.com/pinterest/pins
 
 ### How to deploy a subdirectory to Heroku without Heroku CLI
 
