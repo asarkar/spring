@@ -1,0 +1,3 @@
+include 'couchbase-lib'
+include 'couchbase-client'
+

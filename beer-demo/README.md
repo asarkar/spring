@@ -9,7 +9,7 @@ my own image that's development ready out of the box.
 
 **Run App**
 ```
-beer-demo$ ./gradlew clean bootRun [-Dcouchbase.initialize=true|false]
+beer-demo$ ./gradlew clean bootRun [-Dcouchbase.bucket.createIfMissing=true]
 ```
 
 **Find a Beer**

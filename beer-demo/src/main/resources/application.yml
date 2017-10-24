@@ -1,9 +1,0 @@
-logging.level:
-  org.springframework: WARN
-  com.couchbase.client: OFF
-  org.abhijitsarkar.spring.beer: INFO
-couchbase:
-  adminUsername: admin
-  adminPassword: admin123
-  bucket:
-    name: beer_sample
