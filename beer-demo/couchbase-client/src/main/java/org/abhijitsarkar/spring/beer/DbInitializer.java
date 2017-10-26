@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.abhijitsarkar.spring.beer.domain.Beer;
 import org.abhijitsarkar.spring.beer.domain.Brewery;
 import org.abhijitsarkar.spring.beer.factory.CouchbaseAsyncBucketFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.io.ClassPathResource;
@@ -39,11 +40,18 @@ public class DbInitializer {
     private final AtomicBoolean ranOnce = new AtomicBoolean();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+    @Value("${beer-demo.initialize:false}")
+    private boolean initialize;
+
     @EventListener
     // Spring event handling is blocking by default; this is the simplest way to handle events on a separate thread on a
     // case-by-case basis; using multicast makes every event handler async.
     @Async
     void doWhenApplicationIsReady(ApplicationReadyEvent event) {
+        if (initialize == false) {
+            return;
+        }
+
         Observable.timer(DELAY, TimeUnit.SECONDS)
                 // zip will unsubscribe on error, so use flatMap
                 .flatMap(i -> save())

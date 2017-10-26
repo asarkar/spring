@@ -79,6 +79,7 @@ public interface CouchbaseAsyncClusterFactory {
                     subscriber.onSuccess(asyncCluster);
                 } catch (Exception e) {
                     log.error("Failed to connect to Couchbase cluster: {}.", nodes, e);
+                    environment.shutdown(couchbaseProperties.getClusterDisconnectTimeoutMillis(), MILLISECONDS);
                     subscriber.onError(e);
                 }
             })

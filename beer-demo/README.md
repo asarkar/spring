@@ -1,15 +1,21 @@
 **Start Couchbase**
 
-```
-docker run -d --name couchbase -p 8091-8094:8091-8094 -p 11210:11210 asarkar/couchbase:debian-jessie
-```
+See https://github.com/asarkar/docker/tree/master/couchbase.
 
 > Official Couchbase requires [manual set up]((https://hub.docker.com/r/couchbase/server/)), thus I created
 my own image that's development ready out of the box.
 
+**Add an entry to your hosts file**
+```
+127.0.0.1       couchbase-node-0.couchbase
+```
+
 **Run App**
 ```
-beer-demo$ ./gradlew clean bootRun [-Dcouchbase.bucket.createIfMissing=true]
+beer-demo$ ./gradlew clean bootRun \
+    -Dcouchbase.bucket.createIfMissing=true \
+    -Dcouchbase.dnsSrvEnabled=false \
+    -Dbeer-demo.initialize=true
 ```
 
 **Find a Beer**
