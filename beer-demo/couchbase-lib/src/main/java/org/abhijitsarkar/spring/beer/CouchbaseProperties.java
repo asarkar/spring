@@ -27,7 +27,6 @@ public class CouchbaseProperties {
         private boolean enableFlush = true;
         private boolean createIfMissing;
         private String name;
-        private String password = "";
         private long bucketCreateTimeoutMillis = 10000;
         private long bucketOpenTimeoutMillis = bucketCreateTimeoutMillis;
         private long bucketCloseTimeoutMillis = 25000;

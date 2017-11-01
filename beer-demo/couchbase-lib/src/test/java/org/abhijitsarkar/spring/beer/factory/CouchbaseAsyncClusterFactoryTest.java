@@ -17,6 +17,7 @@ import java.util.function.BiFunction;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -28,20 +29,24 @@ import static org.mockito.Mockito.when;
 public class CouchbaseAsyncClusterFactoryTest {
     private BiFunction<CouchbaseEnvironment, List<String>, CouchbaseAsyncCluster> mockClusterCreator;
     private CouchbaseAsyncCluster mockCluster;
+    private CouchbaseProperties couchbaseProperties;
 
     @Before
     public void beforeEach() {
         mockClusterCreator = mock(BiFunction.class);
         mockCluster = mock(CouchbaseAsyncCluster.class);
+        couchbaseProperties = new CouchbaseProperties();
 
         when(mockClusterCreator.apply(any(CouchbaseEnvironment.class), any(List.class)))
+                .thenReturn(mockCluster);
+        when(mockCluster.authenticate(nullable(String.class), nullable(String.class)))
                 .thenReturn(mockCluster);
     }
 
     @Test
     public void testCreateCluster() {
         CouchbaseAsyncClusterFactory factory =
-                CouchbaseAsyncClusterFactory.newInstance(null, new CouchbaseProperties());
+                CouchbaseAsyncClusterFactory.newInstance(null, couchbaseProperties);
 
         assertThat(factory).isInstanceOf(
                 CouchbaseAsyncClusterFactory.DefaultCouchbaseAsyncClusterFactory.class);
@@ -65,7 +70,7 @@ public class CouchbaseAsyncClusterFactoryTest {
         when(mockClusterCreator.apply(any(CouchbaseEnvironment.class), any(List.class)))
                 .thenThrow(new RuntimeException("test"));
         CouchbaseAsyncClusterFactory factory =
-                CouchbaseAsyncClusterFactory.newInstance(null, new CouchbaseProperties());
+                CouchbaseAsyncClusterFactory.newInstance(null, couchbaseProperties);
 
         assertThat(factory).isInstanceOf(
                 CouchbaseAsyncClusterFactory.DefaultCouchbaseAsyncClusterFactory.class);
@@ -84,7 +89,7 @@ public class CouchbaseAsyncClusterFactoryTest {
     @Test
     public void testCreateCBEnvIfNull() {
         CouchbaseAsyncClusterFactory factory =
-                CouchbaseAsyncClusterFactory.newInstance(null, new CouchbaseProperties());
+                CouchbaseAsyncClusterFactory.newInstance(null, couchbaseProperties);
 
         assertThat(factory).isInstanceOf(
                 CouchbaseAsyncClusterFactory.DefaultCouchbaseAsyncClusterFactory.class);
@@ -99,7 +104,7 @@ public class CouchbaseAsyncClusterFactoryTest {
         DefaultCouchbaseEnvironment couchbaseEnvironment = DefaultCouchbaseEnvironment.create();
 
         CouchbaseAsyncClusterFactory factory =
-                CouchbaseAsyncClusterFactory.newInstance(couchbaseEnvironment, new CouchbaseProperties());
+                CouchbaseAsyncClusterFactory.newInstance(couchbaseEnvironment, couchbaseProperties);
 
         assertThat(factory).isInstanceOf(
                 CouchbaseAsyncClusterFactory.DefaultCouchbaseAsyncClusterFactory.class);
@@ -118,7 +123,7 @@ public class CouchbaseAsyncClusterFactoryTest {
     @Test
     public void testDisconnect() {
         CouchbaseAsyncClusterFactory factory =
-                CouchbaseAsyncClusterFactory.newInstance(null, new CouchbaseProperties());
+                CouchbaseAsyncClusterFactory.newInstance(null, couchbaseProperties);
 
         assertThat(factory).isInstanceOf(
                 CouchbaseAsyncClusterFactory.DefaultCouchbaseAsyncClusterFactory.class);

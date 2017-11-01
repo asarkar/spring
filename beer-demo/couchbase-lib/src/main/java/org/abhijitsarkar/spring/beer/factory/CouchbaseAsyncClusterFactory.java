@@ -72,16 +72,10 @@ public interface CouchbaseAsyncClusterFactory {
         final Single<AsyncCluster> newAsyncClusterInstance() {
             return Single.create((SingleSubscriber<? super AsyncCluster> subscriber) -> {
                 List<String> nodes = couchbaseProperties.getNodes();
-                try {
-                    log.info("Connecting to Couchbase cluster: {}.", nodes);
-                    AsyncCluster asyncCluster = clusterCreator.apply(environment, nodes);
-                    log.info("Successfully connected to Couchbase cluster: {}.", nodes);
-                    subscriber.onSuccess(asyncCluster);
-                } catch (Exception e) {
-                    log.error("Failed to connect to Couchbase cluster: {}.", nodes, e);
-                    environment.shutdown(couchbaseProperties.getClusterDisconnectTimeoutMillis(), MILLISECONDS);
-                    subscriber.onError(e);
-                }
+                log.info("Connecting to Couchbase cluster: {}.", nodes);
+                AsyncCluster asyncCluster = clusterCreator.apply(environment, nodes)
+                        .authenticate(couchbaseProperties.getAdminUsername(), couchbaseProperties.getAdminPassword());
+                subscriber.onSuccess(asyncCluster);
             })
                     .timeout(couchbaseProperties.getClusterOperationTimeoutMillis(), MILLISECONDS);
         }

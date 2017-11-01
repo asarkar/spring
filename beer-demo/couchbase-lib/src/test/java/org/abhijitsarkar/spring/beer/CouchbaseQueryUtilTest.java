@@ -5,6 +5,7 @@ import com.couchbase.client.java.AsyncBucket;
 import com.couchbase.client.java.document.json.JsonObject;
 import com.couchbase.client.java.query.AsyncN1qlQueryResult;
 import com.couchbase.client.java.query.AsyncN1qlQueryRow;
+import com.couchbase.client.java.query.N1qlMetrics;
 import com.couchbase.client.java.query.N1qlQuery;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,6 +34,7 @@ public class CouchbaseQueryUtilTest {
         mockResult = mock(AsyncN1qlQueryResult.class);
 
         when(mockBucket.query(mockQuery)).thenReturn(Observable.just(mockResult));
+        when(mockResult.info()).thenReturn(Observable.just(new N1qlMetrics(JsonObject.empty())));
     }
 
     @Test

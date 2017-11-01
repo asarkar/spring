@@ -32,6 +32,11 @@ public final class CouchbaseQueryUtil {
                             .finalSuccess()
                             .defaultIfEmpty(false)
                             .flatMap(success -> {
+                                result.info()
+                                        .doOnNext(info -> log.debug("Query metrics: {}.", result.info()))
+                                        .toCompletable()
+                                        .await();
+
                                 if (success) {
                                     return result.rows();
                                 } else {

@@ -59,7 +59,7 @@ public class AsyncBucketHystrixObservableCommandTest {
 
         when(mockClusterFactory.getAsyncClusterInstance()).thenReturn(Single.just(mockCluster));
         when(mockCluster.clusterManager(anyString(), anyString())).thenReturn(Observable.just(mockClusterManager));
-        when(mockCluster.openBucket(anyString(), anyString())).thenReturn(Observable.just(mockBucket));
+        when(mockCluster.openBucket(anyString())).thenReturn(Observable.just(mockBucket));
         when(mockQueryExecutor.apply(eq(mockBucket), any(N1qlQuery.class)))
                 .thenReturn(Observable.just(mock(AsyncN1qlQueryRow.class)));
 
@@ -71,6 +71,8 @@ public class AsyncBucketHystrixObservableCommandTest {
         couchbaseProperties.setBlockingOperationTimeoutMillis(1L);
         couchbaseProperties.setAdminUsername("test");
         couchbaseProperties.setBucket(bucket);
+        couchbaseProperties.setAdminUsername("test");
+        couchbaseProperties.setAdminPassword("test");
     }
 
     @Test
@@ -134,13 +136,12 @@ public class AsyncBucketHystrixObservableCommandTest {
 
         verify(mockClusterManager).insertBucket(argThat(settings ->
                 settings.name().equals(bucket.getName())
-                        && settings.password().equals(bucket.getPassword())
                         && settings.enableFlush() == bucket.isEnableFlush()
                         && settings.quota() == bucket.getDefaultQuotaMB()
                         && settings.indexReplicas() == bucket.isIndexReplicas()
                         && bucket.isCreateIfMissing()
         ));
-        verify(mockCluster).openBucket(bucket.getName(), bucket.getPassword());
+        verify(mockCluster).openBucket(bucket.getName());
     }
 
     @Test
@@ -161,8 +162,9 @@ public class AsyncBucketHystrixObservableCommandTest {
                 .subscribe(subscriber);
 
         subscriber.assertError(RuntimeException.class);
+        subscriber.assertNotCompleted();
 
-        verify(mockCluster, never()).openBucket(bucket.getName(), bucket.getPassword());
+        verify(mockCluster, never()).openBucket(bucket.getName());
     }
 
     @Test
@@ -174,7 +176,7 @@ public class AsyncBucketHystrixObservableCommandTest {
 
         cmd.queryExecutor = mockQueryExecutor;
 
-        when(mockCluster.openBucket(anyString(), anyString()))
+        when(mockCluster.openBucket(anyString()))
                 .thenThrow(new RuntimeException("test"));
         TestSubscriber<AsyncBucket> subscriber = new TestSubscriber<>();
 
@@ -182,6 +184,7 @@ public class AsyncBucketHystrixObservableCommandTest {
                 .subscribe(subscriber);
 
         subscriber.assertError(RuntimeException.class);
+        subscriber.assertNotCompleted();
     }
 
     @Test
@@ -200,9 +203,10 @@ public class AsyncBucketHystrixObservableCommandTest {
                 .subscribe(subscriber);
 
         subscriber.assertError(RuntimeException.class);
+        subscriber.assertNotCompleted();
 
         verify(mockClusterManager, never()).insertBucket(any(BucketSettings.class));
-        verify(mockCluster, never()).openBucket(bucket.getName(), bucket.getPassword());
+        verify(mockCluster, never()).openBucket(bucket.getName());
     }
 
     @Test
@@ -231,7 +235,7 @@ public class AsyncBucketHystrixObservableCommandTest {
 
         verify(mockClusterManager, never()).insertBucket(any(BucketSettings.class));
         verify(mockQueryExecutor, never()).apply(eq(mockBucket), any(N1qlQuery.class));
-        verify(mockCluster).openBucket(bucket.getName(), bucket.getPassword());
+        verify(mockCluster).openBucket(bucket.getName());
     }
 
     @Test
@@ -260,7 +264,7 @@ public class AsyncBucketHystrixObservableCommandTest {
         subscriber.assertNoValues();
 
         verify(mockClusterManager, never()).insertBucket(any(BucketSettings.class));
-        verify(mockCluster, never()).openBucket(bucket.getName(), bucket.getPassword());
+        verify(mockCluster, never()).openBucket(bucket.getName());
         verify(mockQueryExecutor, never()).apply(eq(mockBucket), any(N1qlQuery.class));
     }
 
@@ -308,6 +312,7 @@ public class AsyncBucketHystrixObservableCommandTest {
         testScheduler.advanceTimeBy(bucket.getBucketOpenTimeoutMillis(), TimeUnit.MILLISECONDS);
 
         subscriber.assertError(RuntimeException.class);
+        subscriber.assertNotCompleted();
     }
 
     @Test
@@ -333,6 +338,7 @@ public class AsyncBucketHystrixObservableCommandTest {
         testScheduler.advanceTimeBy(delay, TimeUnit.MILLISECONDS);
 
         subscriber.assertNoValues();
+        subscriber.assertNotCompleted();
     }
 
     @Test
@@ -340,7 +346,7 @@ public class AsyncBucketHystrixObservableCommandTest {
         long delay = bucket.getBucketOpenTimeoutMillis() * 3;
 
         when(mockClusterManager.hasBucket(anyString())).thenReturn(Observable.just(true));
-        when(mockCluster.openBucket(anyString(), anyString())).thenReturn(Observable.just(mockBucket)
+        when(mockCluster.openBucket(anyString())).thenReturn(Observable.just(mockBucket)
                 .delay(delay, TimeUnit.MILLISECONDS));
 
         AsyncBucketHystrixObservableCommand cmd =
@@ -357,6 +363,7 @@ public class AsyncBucketHystrixObservableCommandTest {
         testScheduler.advanceTimeBy(delay, TimeUnit.MILLISECONDS);
 
         subscriber.assertNoValues();
+        subscriber.assertNotCompleted();
     }
 
     @Test
@@ -380,5 +387,6 @@ public class AsyncBucketHystrixObservableCommandTest {
         testScheduler.advanceTimeBy(delay, TimeUnit.MILLISECONDS);
 
         subscriber.assertNoValues();
+        subscriber.assertNotCompleted();
     }
 }

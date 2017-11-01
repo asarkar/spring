@@ -166,7 +166,6 @@ public class AsyncBucketHystrixObservableCommand extends HystrixObservableComman
     private final BucketSettings bucketSettings(CouchbaseProperties.BucketProperties bucket) {
         return DefaultBucketSettings.builder()
                 .name(bucket.getName())
-                .password(bucket.getPassword())
                 .enableFlush(bucket.isEnableFlush())
                 .quota(bucket.getDefaultQuotaMB())
                 .indexReplicas(bucket.isIndexReplicas())
@@ -195,7 +194,7 @@ public class AsyncBucketHystrixObservableCommand extends HystrixObservableComman
         CouchbaseProperties.BucketProperties bucket = couchbaseProperties.getBucket();
         log.info("Opening bucket: {}.", bucket.getName());
 
-        return cluster.openBucket(bucket.getName(), bucket.getPassword())
+        return cluster.openBucket(bucket.getName())
                 .doOnCompleted(() -> log.info("Successfully opened bucket: {}.", bucket.getName()))
                 .doOnError(t -> log.error("Failed to open bucket: {}.", bucket.getName(), t))
                 .timeout(bucket.getBucketOpenTimeoutMillis(), MILLISECONDS);
