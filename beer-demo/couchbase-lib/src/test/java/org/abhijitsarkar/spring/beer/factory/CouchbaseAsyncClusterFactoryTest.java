@@ -84,6 +84,7 @@ public class CouchbaseAsyncClusterFactoryTest {
                 .subscribe(subscriber);
 
         subscriber.assertError(RuntimeException.class);
+        subscriber.assertNotCompleted();
     }
 
     @Test

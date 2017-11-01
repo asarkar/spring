@@ -71,8 +71,6 @@ public class AsyncBucketHystrixObservableCommandTest {
         couchbaseProperties.setBlockingOperationTimeoutMillis(1L);
         couchbaseProperties.setAdminUsername("test");
         couchbaseProperties.setBucket(bucket);
-        couchbaseProperties.setAdminUsername("test");
-        couchbaseProperties.setAdminPassword("test");
     }
 
     @Test
