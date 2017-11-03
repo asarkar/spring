@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        springBootVersion = "1.5.6.RELEASE"
+        springBootVersion = "1.5.8.RELEASE"
         lombokVersion = "1.16.16"
         slf4jVersion = "1.7.25"
         logbackVersion = "1.2.3"
@@ -10,17 +10,27 @@ buildscript {
         hystrixVersion = "1.5.12"
         mockitoVersion = "2.11.0"
         assertjVersion = "3.8.0"
+        gradlePluginVersion = "3.2.0"
+        dependencyManagementPluginVersion = "1.0.3.RELEASE"
     }
-}
 
-plugins {
-    id "io.spring.dependency-management" version "1.0.3.RELEASE" apply false
-    id "org.springframework.boot" version "1.5.6.RELEASE" apply false
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath(
+                "com.bmuschko:gradle-docker-plugin:$gradlePluginVersion",
+                "io.spring.gradle:dependency-management-plugin:$dependencyManagementPluginVersion",
+                "org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion"
+        )
+    }
 }
 
 subprojects { subproject ->
     if (subproject.name == "couchbase-client") {
         apply plugin: "org.springframework.boot"
+        apply plugin: "com.bmuschko.docker-remote-api"
     }
 }
 
@@ -35,7 +45,7 @@ allprojects {
     sourceCompatibility = 1.8
 
     repositories {
-        mavenCentral()
+        jcenter()
     }
 
     dependencyManagement {
@@ -88,5 +98,32 @@ project(":couchbase-client") {
     dependencies {
         compile project(':couchbase-lib')
     }
+
+//    task createDockerfile(type: Dockerfile) {
+//        dependsOn bootRepackage
+//
+//        destFile = new File(buildDir, "Dockerfile")
+//        from("openjdk:8u131-jdk-alpine")
+//
+//        def sourceJar = "libs/${project.name}-${project.version}.jar"
+//        def destJar = "/app.jar"
+//
+//        copyFile(sourceJar, destJar)
+//
+//        runCommand("touch $destJar")
+//
+//        entryPoint("java", "-Djava.security.egd=file:/dev/./urandom", "-jar", destJar)
+//    }
+
+//    task copyDockerfile(type: Copy) {
+//        from fileTree("docker").files
+//        into buildDir
+//    }
+//
+//    task buildImage(type: DockerBuildImage, dependsOn: [bootRepackage, copyDockerfile]) {
+//        inputDir = buildDir
+//        tag = "asarkar/${project.name}"
+//        remove = true
+//    }
 }
 

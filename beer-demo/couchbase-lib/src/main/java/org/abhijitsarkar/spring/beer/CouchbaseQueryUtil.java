@@ -5,6 +5,7 @@ import com.couchbase.client.core.lang.Tuple;
 import com.couchbase.client.java.AsyncBucket;
 import com.couchbase.client.java.query.AsyncN1qlQueryResult;
 import com.couchbase.client.java.query.AsyncN1qlQueryRow;
+import com.couchbase.client.java.query.N1qlMetrics;
 import com.couchbase.client.java.query.N1qlQuery;
 import com.couchbase.client.java.query.Statement;
 import lombok.extern.slf4j.Slf4j;
@@ -24,20 +25,23 @@ public final class CouchbaseQueryUtil {
 
         return bucket.query(query)
                 .map(result -> Tuple.create(query, result))
-                .flatMap(tuple -> {
-                    AsyncN1qlQueryResult result = tuple.value2();
-                    Statement statement = tuple.value1().statement();
+                .flatMap(tuple1 -> {
+                    AsyncN1qlQueryResult result = tuple1.value2();
+                    Statement statement = tuple1.value1().statement();
 
                     return result
                             .finalSuccess()
                             .defaultIfEmpty(false)
-                            .flatMap(success -> {
-                                result.info()
-                                        .doOnNext(info -> log.debug("Query metrics: {}.", result.info()))
-                                        .toCompletable()
-                                        .await();
+                            .zipWith(result.info(), Tuple::create)
+                            .flatMap(tuple2 -> {
+                                boolean success = tuple2.value1();
+                                N1qlMetrics metrics = tuple2.value2();
+
+                                log.debug("Query metrics: {}.", metrics);
 
                                 if (success) {
+                                    log.debug("Successfully executed query: {}.", statement);
+
                                     return result.rows();
                                 } else {
                                     // https://developer.couchbase.com/documentation/server/current/sdk/java/handling-error-conditions.html

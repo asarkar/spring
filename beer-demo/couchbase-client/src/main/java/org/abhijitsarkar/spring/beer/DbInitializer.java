@@ -40,7 +40,7 @@ public class DbInitializer {
     private final AtomicBoolean ranOnce = new AtomicBoolean();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @Value("${beer-demo.initialize:false}")
+    @Value("${beerDemo.initialize}")
     private boolean initialize;
 
     @EventListener
@@ -48,7 +48,8 @@ public class DbInitializer {
     // case-by-case basis; using multicast makes every event handler async.
     @Async
     void doWhenApplicationIsReady(ApplicationReadyEvent event) {
-        if (initialize == false) {
+        if (!initialize) {
+            log.info("Database will not be initialized.");
             return;
         }
 

@@ -1,0 +1,29 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: couchbase-client
+  labels:
+    app: couchbase-client
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: couchbase-client
+  template:
+    metadata:
+      labels:
+        app: couchbase-client
+    spec:
+      containers:
+      - name: couchbase-client
+        image: asarkar/couchbase-client
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8080
+        env:
+        - name: COUCHBASE_NODES
+          value: couchbase.default.svc.cluster.local
+        - name: COUCHBASE_BUCKET_CREATE_IF_MISSING
+          value: "true"
+        - name: BEER_DEMO_INITIALIZE
+          value: "true"
