@@ -40,6 +40,7 @@ public class CouchbaseConfiguration {
         return DefaultCouchbaseEnvironment.builder()
                 .networkLatencyMetricsCollectorConfig(builder.build())
                 .dnsSrvEnabled(couchbaseProperties.isDnsSrvEnabled())
+                .autoreleaseAfter(couchbaseProperties.getBlockingOperationTimeoutMillis())
                 .build();
     }
 

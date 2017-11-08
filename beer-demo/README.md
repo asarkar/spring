@@ -15,29 +15,32 @@ beer-demo$ docker build -t asarkar/couchbase-client -f couchbase-client/docker/D
 beer-demo$ kubectl create -f couchbase-client/k8s/deployment.yaml
 ```
 
-**Expose the Deployment**
+**Create a NodePort**
 ```
-beer-demo$ kubectl expose deployment couchbase-client --type=NodePort --name=couchbase-client
+beer-demo$ kubectl create -f couchbase-client/k8s/nodeport.yaml
 ```
 
-Follow [this](https://kubernetes.io/docs/tasks/access-application-cluster/service-access-application-cluster/) article to get the `NodePort` and public node IP.
+**Find Public Node IP**
+```
+beer-demo$ kubectl cluster-info
+```
 
 **Find a Beer**
 ```
-beer-demo$ curl -H "Accept: application/json" "http://<public-node-ip>:<node-port>/beers/Double%20Trouble%20IPA"
+beer-demo$ curl -H "Accept: application/json" "http://<public-node-ip>:32000/beers/Double%20Trouble%20IPA"
 ```
 
 **Find a Brewery**
 ```
-beer-demo$ curl -H "Accept: application/json" "http://<public-node-ip>:<node-port>/breweries/21st%20Amendment%20Brewery%20Cafe"
+beer-demo$ curl -H "Accept: application/json" "http://<public-node-ip>:32000/breweries/21st%20Amendment%20Brewery%20Cafe"
 ```
 
 **Find All Beers**
 ```
-beer-demo$ curl -H "Accept: application/json" "http://<public-node-ip>:<node-port>/beers"
+beer-demo$ curl -H "Accept: application/json" "http://<public-node-ip>:32000/beers"
 ```
 
 **Find All Breweries**
 ```
-beer-demo$ curl -H "Accept: application/json" "http://<public-node-ip>:<node-port>/breweries"
+beer-demo$ curl -H "Accept: application/json" "http://<public-node-ip>:32000/breweries"
 ```
