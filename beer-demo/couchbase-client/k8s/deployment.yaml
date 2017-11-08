@@ -22,8 +22,13 @@ spec:
         - containerPort: 8080
         env:
         - name: COUCHBASE_NODES
-          value: couchbase.default.svc.cluster.local
+          value: couchbase.${POD_NAMESPACE}.svc.cluster.local
         - name: COUCHBASE_BUCKET_CREATE_IF_MISSING
           value: "true"
         - name: BEER_DEMO_INITIALIZE
           value: "true"
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace

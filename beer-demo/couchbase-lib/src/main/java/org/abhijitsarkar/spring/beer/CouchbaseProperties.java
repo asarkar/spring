@@ -1,11 +1,19 @@
 package org.abhijitsarkar.spring.beer;
 
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.core.env.ConfigurableEnvironment;
 
 import java.util.List;
 
 import static java.util.Arrays.asList;
+import static java.util.Objects.nonNull;
+import static java.util.stream.Collectors.toList;
+import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Data
 @ConfigurationProperties(prefix = "couchbase")
@@ -19,6 +27,19 @@ public class CouchbaseProperties {
     private long clusterDisconnectTimeoutMillis = 25000;
     private long blockingOperationTimeoutMillis = 5000;
     private boolean dnsSrvEnabled = true;
+
+    @Autowired
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
+    private ConfigurableEnvironment env;
+
+    public void setNodes(List<String> nodes) {
+        if (nonNull(env) && !isEmpty(nodes)) {
+            this.nodes = nodes.stream()
+                    .map(env::resolvePlaceholders)
+                    .collect(toList());
+        }
+    }
 
     @Data
     public static class BucketProperties {
