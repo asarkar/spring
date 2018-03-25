@@ -1,0 +1,94 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath(
+                "org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion",
+                "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion",
+                "org.jetbrains.kotlin:kotlin-allopen:$kotlinVersion",
+                "org.jetbrains.kotlin:kotlin-noarg:$kotlinVersion"
+        )
+    }
+}
+
+allprojects {
+    if (!project.plugins.hasPlugin("io.spring.dependency-management")) {
+        apply plugin: "io.spring.dependency-management"
+    }
+
+    apply plugin: "kotlin"
+    apply plugin: "kotlin-spring"
+
+    group = "org.abhijitsarkar"
+    version = "0.0.1-SNAPSHOT"
+    sourceCompatibility = 1.8
+
+    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile) {
+        kotlinOptions {
+            jvmTarget = "1.8"
+        }
+    }
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencyManagement {
+        imports {
+            mavenBom("org.springframework.boot:spring-boot-dependencies:$springBootVersion")
+        }
+    }
+
+    dependencies {
+        implementation(
+                "org.springframework.boot:spring-boot-starter",
+                "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+        )
+    }
+}
+
+apply plugin: "kotlin-jpa"
+
+dependencies {
+    apiElements(
+            "org.junit.jupiter:junit-jupiter-api:$junitVersion",
+            "org.slf4j:slf4j-api:$slf4jVersion"
+    )
+    implementation(
+            "org.springframework.boot:spring-boot-starter-batch",
+            "org.springframework.boot:spring-boot-starter-data-jpa",
+            "org.jetbrains.kotlin:kotlin-reflect",
+            "io.projectreactor:reactor-core",
+            "org.junit.platform:junit-platform-console:$junitPlatformVersion",
+            "org.slf4j:slf4j-api:$slf4jVersion"
+    )
+    runtimeOnly(
+            "com.h2database:h2",
+            "org.junit.jupiter:junit-jupiter-engine:$junitVersion",
+            "ch.qos.logback:logback-classic:$logbackVersion",
+            "ch.qos.logback:logback-core:$logbackVersion"
+    )
+    testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
+    testImplementation("org.springframework.boot:spring-boot-starter-test") {
+        exclude group: "junit"
+    }
+    testImplementation("org.springframework.batch:spring-batch-test") {
+        exclude group: "junit"
+    }
+}
+
+test {
+    useJUnitPlatform()
+}
+
+project(":touchstone-demo") {
+    apply plugin: "org.springframework.boot"
+
+    dependencies {
+        implementation(
+                rootProject
+        )
+    }
+}
+
