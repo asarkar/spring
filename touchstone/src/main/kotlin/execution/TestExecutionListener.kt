@@ -37,7 +37,7 @@ class TestExecutionListener(private val repo: TestExecutionSummaryRepository) : 
             try {
                 repo.save(summary)
             } catch (e: Exception) {
-                LOGGER.error("Failed to save test execution summary for: {}", testExecutionId)
+                LOGGER.error("Failed to save test execution summary for: $testExecutionId", e)
             } finally {
                 stepExecution.executionContext.remove(EXECUTION_RESULT_KEY)
             }

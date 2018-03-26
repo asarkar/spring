@@ -30,6 +30,12 @@ allprojects {
         }
     }
 
+    kotlin {
+        experimental {
+            coroutines "enable"
+        }
+    }
+
     repositories {
         mavenCentral()
     }
@@ -53,13 +59,14 @@ apply plugin: "kotlin-jpa"
 dependencies {
     apiElements(
             "org.junit.jupiter:junit-jupiter-api:$junitVersion",
-            "org.slf4j:slf4j-api:$slf4jVersion"
+            "org.slf4j:slf4j-api:$slf4jVersion",
+            "org.jetbrains.kotlinx:kotlinx-coroutines-core:$couroutinesVersion"
     )
     implementation(
             "org.springframework.boot:spring-boot-starter-batch",
             "org.springframework.boot:spring-boot-starter-data-jpa",
             "org.jetbrains.kotlin:kotlin-reflect",
-            "io.projectreactor:reactor-core",
+            "org.jetbrains.kotlinx:kotlinx-coroutines-core:$couroutinesVersion",
             "org.junit.platform:junit-platform-console:$junitPlatformVersion",
             "org.slf4j:slf4j-api:$slf4jVersion"
     )

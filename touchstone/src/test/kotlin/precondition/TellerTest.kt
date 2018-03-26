@@ -10,28 +10,40 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.slf4j.LoggerFactory
 import org.springframework.batch.repeat.RepeatStatus
+import java.lang.Thread.sleep
 
 /**
  * @author Abhijit Sarkar
  */
 class TellerTest {
+    companion object {
+        private val LOGGER = LoggerFactory.getLogger(TellerTest::class.java)
+    }
+
     private val readyVoter = object : TestPreconditionVoter {
         override fun vote(context: Map<String, Any>): Vote {
-            println("Running on thread: ${Thread.currentThread().name}")
-            return Vote.READY
+            sleep(1000)
+            return Vote.READY.apply {
+                LOGGER.info("{}", this)
+            }
         }
     }
     private val notReadyVoter = object : TestPreconditionVoter {
         override fun vote(context: Map<String, Any>): Vote {
-            println("Running on thread: ${Thread.currentThread().name}")
-            return Vote.NOT_READY
+            sleep(1000)
+            return Vote.NOT_READY.apply {
+                LOGGER.info("{}", this)
+            }
         }
     }
     private val abstainVoter = object : TestPreconditionVoter {
         override fun vote(context: Map<String, Any>): Vote {
-            println("Running on thread: ${Thread.currentThread().name}")
-            return Vote.ABSTAIN
+            sleep(1000)
+            return Vote.ABSTAIN.apply {
+                LOGGER.info("{}", this)
+            }
         }
     }
 
@@ -86,6 +98,13 @@ class TellerTest {
         val status = teller.execute(null, null)
 
         assertThat(status).isEqualTo(RepeatStatus.FINISHED)
+    }
+
+    @Test
+    fun `should timeout`() {
+        touchstoneProperties.vote.timeoutMillis = 100
+        touchstoneProperties.vote.countingStrategy = VoteCountingStrategy.AFFIRMATIVE
+        assertThrows(PreconditionFailedException::class.java, { teller.execute(null, null) })
     }
 
     @Test
