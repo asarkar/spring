@@ -1,6 +1,5 @@
-package org.abhijitsarkar.touchstone.execution
+package org.abhijitsarkar.touchstone.execution.junit
 
-import org.abhijitsarkar.touchstone.TouchstoneProperties
 import org.slf4j.LoggerFactory
 import org.springframework.batch.core.StepContribution
 import org.springframework.batch.core.scope.context.ChunkContext
@@ -16,98 +15,96 @@ import java.util.Locale
  */
 class TestFailedException(override val message: String? = null, val exitCode: Int) : RuntimeException(message)
 
-class TestExecutor(
-        touchstoneProperties: TouchstoneProperties,
-        private val testLauncher: TestLauncher = DefaultTestLauncher()
+class JUnitExecutor(
+        private val junit: JUnitProperties,
+        private val jUnitLauncher: JUnitLauncher = DefaultJUnitLauncher()
 ) : Tasklet {
     companion object {
-        private val LOGGER = LoggerFactory.getLogger(TestExecutor::class.java)
-        const val EXECUTION_RESULT_KEY = "touchstone.test.executionResult"
+        private val LOGGER = LoggerFactory.getLogger(JUnitExecutor::class.java)
+        const val EXECUTION_RESULT_KEY = "touchstone.junit.executionResult"
     }
-
-    private val test = touchstoneProperties.test
 
     override fun execute(contribution: StepContribution?, chunkContext: ChunkContext): RepeatStatus {
         val args = mutableListOf<String>()
 
-        if (test.help)
+        if (junit.help)
             args += "--help"
-        if (test.disableAnsiColors)
+        if (junit.disableAnsiColors)
             args += "--disable-ansi-colors"
 
         args += "--details"
-        args += test.details.name.toLowerCase(Locale.ENGLISH)
+        args += junit.details.name.toLowerCase(Locale.ENGLISH)
         args += "--details-theme"
-        args += test.detailsTheme.name.toLowerCase(Locale.ENGLISH)
+        args += junit.detailsTheme.name.toLowerCase(Locale.ENGLISH)
         args += "--reports-dir"
-        args += test.reportsDir
+        args += junit.reportsDir
 
-        test.selectUri.forEach {
+        junit.selectUri.forEach {
             args += "--select-uri"
             args += it
         }
 
-        test.selectFile.forEach {
+        junit.selectFile.forEach {
             args += "--select-file"
             args += it
         }
 
-        test.selectDirectory.forEach {
+        junit.selectDirectory.forEach {
             args += "--select-directory"
             args += it
         }
 
-        test.selectPackage.forEach {
+        junit.selectPackage.forEach {
             args += "--select-package"
             args += it
         }
 
-        test.selectClass.forEach {
+        junit.selectClass.forEach {
             args += "--select-class"
             args += it
         }
 
-        test.selectMethod.forEach {
+        junit.selectMethod.forEach {
             args += "--select-method"
             args += it
         }
 
-        test.selectResource.forEach {
+        junit.selectResource.forEach {
             args += "--select-resource"
             args += it
         }
 
-        test.includeClassname.forEach {
+        junit.includeClassname.forEach {
             args += "--include-classname"
             args += it
         }
 
-        test.excludeClassname.forEach {
+        junit.excludeClassname.forEach {
             args += "--exclude-classname"
             args += it
         }
 
-        test.includePackage.forEach {
+        junit.includePackage.forEach {
             args += "--include-package"
             args += it
         }
 
-        test.excludePackage.forEach {
+        junit.excludePackage.forEach {
             args += "--exclude-package"
             args += it
         }
 
-        test.includeTag.forEach {
+        junit.includeTag.forEach {
             args += "--include-tag"
             args += it
         }
 
-        test.excludeTag.forEach {
+        junit.excludeTag.forEach {
             args += "--exclude-tag"
             args += it
         }
 
-        test.config.forEach {
+        junit.config.forEach {
             args += "--config"
             args += "${it.key}=${it.value}"
         }
@@ -119,7 +116,7 @@ class TestExecutor(
         val p1 = PrintStream(out)
         val p2 = PrintStream(err)
 
-        val result = testLauncher.launch(p1, p2, args.toTypedArray())
+        val result = jUnitLauncher.launch(p1, p2, args.toTypedArray())
 
         if (out.size() > 0) {
             LOGGER.info("{}", out.toString(StandardCharsets.UTF_8.name()))

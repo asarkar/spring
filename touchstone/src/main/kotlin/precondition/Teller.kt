@@ -7,13 +7,6 @@ import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.newSingleThreadContext
 import kotlinx.coroutines.experimental.runBlocking
 import kotlinx.coroutines.experimental.withTimeout
-import org.abhijitsarkar.touchstone.TestPreconditionVoter
-import org.abhijitsarkar.touchstone.TouchstoneProperties
-import org.abhijitsarkar.touchstone.Vote
-import org.abhijitsarkar.touchstone.VoteCastingStrategy.PARALLEL
-import org.abhijitsarkar.touchstone.VoteCountingStrategy.AFFIRMATIVE
-import org.abhijitsarkar.touchstone.VoteCountingStrategy.CONSENSUS
-import org.abhijitsarkar.touchstone.VoteCountingStrategy.UNANIMOUS
 import org.slf4j.LoggerFactory
 import org.springframework.batch.core.StepContribution
 import org.springframework.batch.core.scope.context.ChunkContext
@@ -28,12 +21,10 @@ import java.util.concurrent.ConcurrentHashMap
  */
 class PreconditionFailedException(override val message: String? = null, override val cause: Throwable? = null) : RuntimeException(message, null)
 
-class Teller(touchstoneProperties: TouchstoneProperties) : Tasklet {
+class Teller(private val vote: VotingProperties) : Tasklet {
     companion object {
         private val LOGGER = LoggerFactory.getLogger(Teller::class.java)
     }
-
-    private val vote = touchstoneProperties.vote
 
     @Autowired(required = false)
     var voters: List<TestPreconditionVoter> = emptyList()
@@ -53,7 +44,7 @@ class Teller(touchstoneProperties: TouchstoneProperties) : Tasklet {
 
         val context = ConcurrentHashMap<String, Any>()
         val dispatcher =
-                if (vote.castingStrategy == PARALLEL)
+                if (vote.castingStrategy == VoteCastingStrategy.PARALLEL)
                     CommonPool
                 else
                     newSingleThreadContext("touchstone.vote")
@@ -67,7 +58,7 @@ class Teller(touchstoneProperties: TouchstoneProperties) : Tasklet {
             } catch (e: TimeoutCancellationException) {
                 throw PreconditionFailedException(cause = e)
             } finally {
-                if (vote.castingStrategy != PARALLEL)
+                if (vote.castingStrategy != VoteCastingStrategy.PARALLEL)
                     (dispatcher as? ThreadPoolDispatcher)?.close()
             }
         }
@@ -80,9 +71,9 @@ class Teller(touchstoneProperties: TouchstoneProperties) : Tasklet {
         LOGGER.info("Number of ready votes: {}", numReady)
 
         return when (vote.countingStrategy) {
-            UNANIMOUS -> !voteMap.containsKey(Vote.NOT_READY) && !voteMap.containsKey(Vote.ABSTAIN)
-            AFFIRMATIVE -> numReady > 0
-            CONSENSUS -> numReady >= vote.quorum
+            VoteCountingStrategy.UNANIMOUS -> !voteMap.containsKey(Vote.NOT_READY) && !voteMap.containsKey(Vote.ABSTAIN)
+            VoteCountingStrategy.AFFIRMATIVE -> numReady > 0
+            VoteCountingStrategy.CONSENSUS -> numReady >= vote.quorum
         }
     }
 }

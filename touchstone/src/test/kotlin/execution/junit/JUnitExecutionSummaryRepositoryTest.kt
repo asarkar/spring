@@ -1,4 +1,4 @@
-package org.abhijitsarkar.touchstone.result
+package org.abhijitsarkar.touchstone.execution.junit
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -18,14 +18,14 @@ import java.time.OffsetDateTime
 @DataJpaTest
 @Transactional(propagation = Propagation.NOT_SUPPORTED)
 @AutoConfigureTestDatabase
-class TestExecutionSummaryRepositoryTest {
+class JUnitExecutionSummaryRepositoryTest {
     @Autowired
-    private lateinit var repo: TestExecutionSummaryRepository
+    private lateinit var repo: JUnitExecutionSummaryRepository
 
     @Test
     fun `should find previously persisted summary`() {
         val id = TestExecutionId(1, 1)
-        val summary = TestExecutionSummary().apply {
+        val summary = JUnitExecutionSummary().apply {
             this.id = id
             timeStarted = OffsetDateTime.now()
             timeFinished = timeStarted.plusMinutes(1)

@@ -1,4 +1,4 @@
-package org.abhijitsarkar.touchstone.result
+package org.abhijitsarkar.touchstone.execution.junit
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication

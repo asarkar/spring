@@ -1,10 +1,5 @@
 package org.abhijitsarkar.touchstone.precondition
 
-import org.abhijitsarkar.touchstone.TestPreconditionVoter
-import org.abhijitsarkar.touchstone.TouchstoneProperties
-import org.abhijitsarkar.touchstone.Vote
-import org.abhijitsarkar.touchstone.VoteCastingStrategy
-import org.abhijitsarkar.touchstone.VoteCountingStrategy
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertThrows
@@ -48,8 +43,8 @@ class TellerTest {
     }
 
     private val voters = listOf(readyVoter, notReadyVoter, abstainVoter)
-    private var touchstoneProperties = TouchstoneProperties()
-    private val teller = Teller(touchstoneProperties)
+    private var vote = VotingProperties()
+    private val teller = Teller(vote)
 
     @BeforeEach
     fun beforeEach() {
@@ -58,18 +53,18 @@ class TellerTest {
 
     @AfterEach
     fun afterEach() {
-        touchstoneProperties.vote = TouchstoneProperties.VotingProperties()
+        vote = VotingProperties()
     }
 
     @Test
     fun `should throw exception when not unanimous`() {
-        touchstoneProperties.vote.countingStrategy = VoteCountingStrategy.UNANIMOUS
+        vote.countingStrategy = VoteCountingStrategy.UNANIMOUS
         assertThrows(PreconditionFailedException::class.java, { teller.execute(null, null) })
     }
 
     @Test
     fun `should complete when one ready vote`() {
-        touchstoneProperties.vote.countingStrategy = VoteCountingStrategy.AFFIRMATIVE
+        vote.countingStrategy = VoteCountingStrategy.AFFIRMATIVE
         val status = teller.execute(null, null)
 
         assertThat(status).isEqualTo(RepeatStatus.FINISHED)
@@ -77,8 +72,8 @@ class TellerTest {
 
     @Test
     fun `should complete when quorum is reached`() {
-        touchstoneProperties.vote.countingStrategy = VoteCountingStrategy.CONSENSUS
-        touchstoneProperties.vote.quorum = 1
+        vote.countingStrategy = VoteCountingStrategy.CONSENSUS
+        vote.quorum = 1
         val status = teller.execute(null, null)
 
         assertThat(status).isEqualTo(RepeatStatus.FINISHED)
@@ -86,15 +81,15 @@ class TellerTest {
 
     @Test
     fun `should throw exception when quorum is not reached`() {
-        touchstoneProperties.vote.countingStrategy = VoteCountingStrategy.CONSENSUS
-        touchstoneProperties.vote.quorum = 3
+        vote.countingStrategy = VoteCountingStrategy.CONSENSUS
+        vote.quorum = 3
         assertThrows(PreconditionFailedException::class.java, { teller.execute(null, null) })
     }
 
     @Test
     fun `should cast votes parallelly`() {
-        touchstoneProperties.vote.castingStrategy = VoteCastingStrategy.PARALLEL
-        touchstoneProperties.vote.countingStrategy = VoteCountingStrategy.AFFIRMATIVE
+        vote.castingStrategy = VoteCastingStrategy.PARALLEL
+        vote.countingStrategy = VoteCountingStrategy.AFFIRMATIVE
         val status = teller.execute(null, null)
 
         assertThat(status).isEqualTo(RepeatStatus.FINISHED)
@@ -102,8 +97,8 @@ class TellerTest {
 
     @Test
     fun `should timeout`() {
-        touchstoneProperties.vote.timeoutMillis = 100
-        touchstoneProperties.vote.countingStrategy = VoteCountingStrategy.AFFIRMATIVE
+        vote.timeoutMillis = 100
+        vote.countingStrategy = VoteCountingStrategy.AFFIRMATIVE
         assertThrows(PreconditionFailedException::class.java, { teller.execute(null, null) })
     }
 

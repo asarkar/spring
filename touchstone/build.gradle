@@ -38,6 +38,7 @@ allprojects {
 
     repositories {
         mavenCentral()
+        maven { url "https://repo.gradle.org/gradle/libs-releases" }
     }
 
     dependencyManagement {
@@ -52,6 +53,10 @@ allprojects {
                 "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
         )
     }
+
+    test {
+        useJUnitPlatform()
+    }
 }
 
 apply plugin: "kotlin-jpa"
@@ -59,8 +64,7 @@ apply plugin: "kotlin-jpa"
 dependencies {
     apiElements(
             "org.junit.jupiter:junit-jupiter-api:$junitVersion",
-            "org.slf4j:slf4j-api:$slf4jVersion",
-            "org.jetbrains.kotlinx:kotlinx-coroutines-core:$couroutinesVersion"
+            "org.slf4j:slf4j-api:$slf4jVersion"
     )
     implementation(
             "org.springframework.boot:spring-boot-starter-batch",
@@ -68,7 +72,8 @@ dependencies {
             "org.jetbrains.kotlin:kotlin-reflect",
             "org.jetbrains.kotlinx:kotlinx-coroutines-core:$couroutinesVersion",
             "org.junit.platform:junit-platform-console:$junitPlatformVersion",
-            "org.slf4j:slf4j-api:$slf4jVersion"
+            "org.slf4j:slf4j-api:$slf4jVersion",
+            "org.gradle:gradle-tooling-api:$toolingApiVersion"
     )
     runtimeOnly(
             "com.h2database:h2",
@@ -85,10 +90,6 @@ dependencies {
     }
 }
 
-test {
-    useJUnitPlatform()
-}
-
 project(":touchstone-demo") {
     apply plugin: "org.springframework.boot"
 
@@ -96,6 +97,10 @@ project(":touchstone-demo") {
         implementation(
                 rootProject
         )
+    }
+
+    test {
+        testClassesDirs = files("${buildDir.absolutePath}/classes/kotlin/main")
     }
 }
 

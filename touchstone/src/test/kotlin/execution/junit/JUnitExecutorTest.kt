@@ -1,6 +1,5 @@
-package org.abhijitsarkar.touchstone.execution
+package org.abhijitsarkar.touchstone.execution.junit
 
-import org.abhijitsarkar.touchstone.TouchstoneProperties
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
@@ -19,22 +18,22 @@ import org.springframework.batch.repeat.RepeatStatus
 /**
  * @author Abhijit Sarkar
  */
-class TestExecutorTest {
-    private var touchstoneProperties = TouchstoneProperties()
+class JUnitExecutorTest {
+    private var jUnitProperties = JUnitProperties()
 
-    private lateinit var testLauncher: TestLauncher
-    private lateinit var testExecutor: TestExecutor
+    private lateinit var junitLauncher: JUnitLauncher
+    private lateinit var junitExecutor: JUnitExecutor
     private lateinit var chunkContext: ChunkContext
     private lateinit var executionContext: ExecutionContext
     private lateinit var result: ConsoleLauncherExecutionResult
 
     @BeforeEach
     fun beforeEach() {
-        testLauncher = mock(TestLauncher::class.java)
+        junitLauncher = mock(JUnitLauncher::class.java)
         chunkContext = mock(ChunkContext::class.java, RETURNS_DEEP_STUBS)
         executionContext = mock(ExecutionContext::class.java)
         `when`(chunkContext.stepContext.stepExecution.executionContext).thenReturn(executionContext)
-        testExecutor = TestExecutor(touchstoneProperties, testLauncher)
+        junitExecutor = JUnitExecutor(jUnitProperties, junitLauncher)
         result = mock(ConsoleLauncherExecutionResult::class.java)
     }
 
@@ -49,24 +48,24 @@ class TestExecutorTest {
     @Test
     fun `should complete`() {
         `when`(result.exitCode).thenReturn(0)
-        `when`(testLauncher.launch(any(), any(), any()))
+        `when`(junitLauncher.launch(any(), any(), any()))
                 .thenAnswer {
                     val args = it.getArgument<Array<String>>(2)
                     println(args.contentToString())
                     result
                 }
 
-        val status = testExecutor.execute(null, chunkContext)
+        val status = junitExecutor.execute(null, chunkContext)
         Assertions.assertThat(status).isEqualTo(RepeatStatus.FINISHED)
-        verify(executionContext).put(ArgumentMatchers.eq(TestExecutor.EXECUTION_RESULT_KEY), any())
+        verify(executionContext).put(ArgumentMatchers.eq(JUnitExecutor.EXECUTION_RESULT_KEY), any())
     }
 
     @Test
     fun `should throw exception`() {
         `when`(result.exitCode).thenReturn(1)
-        `when`(testLauncher.launch(any(), any(), any())).thenReturn(result)
+        `when`(junitLauncher.launch(any(), any(), any())).thenReturn(result)
 
-        assertThrows(TestFailedException::class.java, { testExecutor.execute(null, chunkContext) })
-        verify(executionContext).put(ArgumentMatchers.eq(TestExecutor.EXECUTION_RESULT_KEY), any())
+        assertThrows(TestFailedException::class.java, { junitExecutor.execute(null, chunkContext) })
+        verify(executionContext).put(ArgumentMatchers.eq(JUnitExecutor.EXECUTION_RESULT_KEY), any())
     }
 }

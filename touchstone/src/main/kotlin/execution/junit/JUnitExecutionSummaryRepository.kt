@@ -1,4 +1,4 @@
-package org.abhijitsarkar.touchstone.result
+package org.abhijitsarkar.touchstone.execution.junit
 
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository
  * @author Abhijit Sarkar
  */
 @Repository
-interface TestExecutionSummaryRepository : JpaRepository<TestExecutionSummary, TestExecutionId> {
+interface JUnitExecutionSummaryRepository : JpaRepository<JUnitExecutionSummary, TestExecutionId> {
 }

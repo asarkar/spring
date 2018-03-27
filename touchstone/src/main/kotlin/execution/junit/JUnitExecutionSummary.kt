@@ -1,4 +1,4 @@
-package org.abhijitsarkar.touchstone.result
+package org.abhijitsarkar.touchstone.execution.junit
 
 import org.springframework.beans.BeanUtils
 import org.springframework.format.annotation.DateTimeFormat
@@ -20,10 +20,10 @@ import org.junit.platform.launcher.listeners.TestExecutionSummary as JUnitSummar
  * @author Abhijit Sarkar
  */
 @Entity
-class TestExecutionSummary : Serializable {
+class JUnitExecutionSummary : Serializable {
     companion object {
-        fun fromJUnit(junit: JUnitSummary): TestExecutionSummary {
-            return TestExecutionSummary().apply {
+        fun fromJUnit(junit: JUnitSummary): JUnitExecutionSummary {
+            return JUnitExecutionSummary().apply {
                 timeStarted = Instant
                         .ofEpochMilli(junit.timeStarted)
                         .atOffset(ZoneOffset.UTC)
