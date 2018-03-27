@@ -17,12 +17,11 @@ class GradleExecutor(private val gradleAgent: GradleAgent) : Tasklet {
 
     private val projectDir = javaClass.protectionDomain.codeSource.location
             .let {
-                LOGGER.debug("Start searching for Gradle project from URL: {}", it)
+                LOGGER.debug("Searching for Gradle project from URL: {}", it)
                 generateSequence(Paths.get(it.path).toAbsolutePath()) {
                     it.parent
                 }
-                        .filter { GradleAgent.isGradleProject(it) }
-                        .firstOrNull()
+                        .firstOrNull { GradleAgent.isGradleProject(it) }
             }
 
     override fun execute(contribution: StepContribution?, chunkContext: ChunkContext?): RepeatStatus {

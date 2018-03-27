@@ -15,5 +15,5 @@ enum class TestExecutor {
 class TouchstoneProperties {
     var jobName: String = "test-job"
     var restartCompletedStep = false
-    var testExecutor: TestExecutor = TestExecutor.JUNIT
+    var testExecutor = TestExecutor.JUNIT
 }

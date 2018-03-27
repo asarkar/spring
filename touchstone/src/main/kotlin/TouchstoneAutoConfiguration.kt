@@ -9,12 +9,15 @@ import org.abhijitsarkar.touchstone.execution.junit.JUnitExecutionSummaryReposit
 import org.abhijitsarkar.touchstone.execution.junit.JUnitExecutor
 import org.abhijitsarkar.touchstone.execution.junit.JUnitProperties
 import org.abhijitsarkar.touchstone.precondition.Teller
+import org.abhijitsarkar.touchstone.precondition.VotingDecider
 import org.abhijitsarkar.touchstone.precondition.VotingProperties
 import org.springframework.batch.core.Job
 import org.springframework.batch.core.Step
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory
+import org.springframework.batch.core.job.builder.FlowBuilder
+import org.springframework.batch.core.job.flow.support.SimpleFlow
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.ComponentScan
@@ -69,15 +72,27 @@ class TouchstoneAutoConfiguration(
                 .build()
     }
 
-    val decider = TestExecutorDecider(touchstoneProperties)
-
     @Bean
     fun job(): Job {
+        val testExecutorDecider = TestExecutorDecider(touchstoneProperties)
+
+        val votingDecider = VotingDecider(votingProperties)
+
+        val votingFlow = FlowBuilder<SimpleFlow>("voting-flow")
+                .start(votingDecider)
+                .on("SKIPPED").end()
+                .on("CONTINUE").to(tellerStep())
+                .end()
+
+        val testingFlow = FlowBuilder<SimpleFlow>("testing-flow")
+                .start(testExecutorDecider)
+                .on(TestExecutor.JUNIT.name).to(junitExecutionStep())
+                .from(testExecutorDecider).on(TestExecutor.GRADLE.name).to(gradleExecutionStep())
+                .end()
+
         return jobs.get(touchstoneProperties.jobName)
-                .start(tellerStep())
-                .next(decider)
-                .on(TestExecutor.GRADLE.name).to(gradleExecutionStep())
-                .from(decider).on(TestExecutor.JUNIT.name).to(junitExecutionStep())
+                .start(votingFlow)
+                .next(testingFlow)
                 .end()
                 .build()
     }

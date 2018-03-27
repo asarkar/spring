@@ -21,4 +21,5 @@ class VotingProperties {
     var castingStrategy = VoteCastingStrategy.SERIAL
     var quorum = 1
     var timeoutMillis = 5000L
+    var skip = false
 }

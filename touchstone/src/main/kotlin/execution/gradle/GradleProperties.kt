@@ -9,6 +9,6 @@ import org.springframework.stereotype.Component
 @Component
 @ConfigurationProperties("touchstone.gradle")
 class GradleProperties {
-    var tasks: Array<String> = arrayOf("test")
-    var options: Array<String> = arrayOf("--warn")
+    var tasks = arrayOf("test")
+    var options = arrayOf("--warn")
 }
