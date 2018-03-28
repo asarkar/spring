@@ -7,11 +7,13 @@ import java.util.Locale
 /**
  * @author Abhijit Sarkar
  */
-enum class Vote {
-    READY, NOT_READY, ABSTAIN;
-}
+fun String.toKebabCase() = this.split("(?=\\p{Upper})".toRegex()).joinToString("-")
 
 interface Condition {
+    companion object {
+        const val PREFIX = "touchstone.condition"
+    }
+
     enum class Phase {
         PRE, POST
     }
@@ -25,5 +27,6 @@ interface Condition {
     fun shouldRun(): Boolean = true
 
     val qualifiedName: String
-        get() = "touchstone.condition.${phase().name.toLowerCase(Locale.ENGLISH)}.${javaClass.simpleName}"
+        get() = listOf(PREFIX, phase().name, javaClass.simpleName.toKebabCase())
+                .joinToString(separator = ".") { it.toLowerCase(Locale.ENGLISH) }
 }

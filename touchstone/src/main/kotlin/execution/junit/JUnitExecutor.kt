@@ -17,7 +17,7 @@ class TestFailedException(override val message: String? = null, val exitCode: In
 
 class JUnitExecutor(
         private val junit: JUnitProperties,
-        private val jUnitLauncher: JUnitLauncher = DefaultJUnitLauncher()
+        private val junitLauncher: JUnitLauncher
 ) : Tasklet {
     companion object {
         private val LOGGER = LoggerFactory.getLogger(JUnitExecutor::class.java)
@@ -116,7 +116,7 @@ class JUnitExecutor(
         val p1 = PrintStream(out)
         val p2 = PrintStream(err)
 
-        val result = jUnitLauncher.launch(p1, p2, args.toTypedArray())
+        val result = junitLauncher.launch(p1, p2, args.toTypedArray())
 
         if (out.size() > 0) {
             LOGGER.info("{}", out.toString(StandardCharsets.UTF_8.name()))

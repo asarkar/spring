@@ -13,7 +13,7 @@ enum class TestExecutor {
 @ConfigurationProperties("touchstone")
 @Component
 class TouchstoneProperties {
-    var jobName: String = "test-job"
-    var restartCompletedStep = false
+    var jobName = "TEST_JOB"
+    var restartCompletedStep = true
     var testExecutor = TestExecutor.JUNIT
 }

@@ -1,12 +1,12 @@
 package org.abhijitsarkar.touchstone.execution.junit
 
+import org.abhijitsarkar.touchstone.mockito.any
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.platform.console.ConsoleLauncherExecutionResult
 import org.mockito.ArgumentMatchers
-import org.mockito.Mockito
 import org.mockito.Mockito.RETURNS_DEEP_STUBS
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.mock
@@ -36,14 +36,6 @@ class JUnitExecutorTest {
         junitExecutor = JUnitExecutor(jUnitProperties, junitLauncher)
         result = mock(ConsoleLauncherExecutionResult::class.java)
     }
-
-    private fun <T> any(): T {
-        Mockito.any<T>()
-        return uninitialized()
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    private fun <T> uninitialized(): T = null as T
 
     @Test
     fun `should complete`() {

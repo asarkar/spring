@@ -6,21 +6,20 @@ import org.springframework.batch.core.StepContribution
 import org.springframework.batch.core.scope.context.ChunkContext
 import org.springframework.batch.core.step.tasklet.Tasklet
 import org.springframework.batch.repeat.RepeatStatus
-import org.springframework.beans.MutablePropertyValues
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.core.env.ConfigurableEnvironment
-import org.springframework.core.env.EnumerablePropertySource
-import org.springframework.validation.BindException
-import org.springframework.validation.DataBinder
+import org.springframework.boot.context.properties.bind.Bindable
+import org.springframework.boot.context.properties.bind.Binder
+import org.springframework.boot.context.properties.source.ConfigurationPropertySources
+import org.springframework.core.env.Environment
 import javax.annotation.PostConstruct
 
 /**
  * @author Abhijit Sarkar
  */
-class ConditionsExecutor(private val phase: Condition.Phase, private val env: ConfigurableEnvironment) : Tasklet {
+class ConditionsExecutor(private val env: Environment) : Tasklet {
     companion object {
         private val LOGGER = LoggerFactory.getLogger(ConditionsExecutor::class.java)
-        private const val CONDITION_PREFIX = "touchstone.condition"
+        const val CONDITION_PHASE_KEY = "${Condition.PREFIX}.phase"
     }
 
     @Autowired(required = false)
@@ -30,45 +29,38 @@ class ConditionsExecutor(private val phase: Condition.Phase, private val env: Co
 
     @PostConstruct
     fun postConstruct() {
-        val map = env.propertySources
-                .filter { it is EnumerablePropertySource }
-                .flatMap { (it as EnumerablePropertySource).propertyNames.toList() }
-                .filter { it.startsWith(CONDITION_PREFIX) }
-                .map { it to env.getProperty(it, Any::class.java) }
-                .toMap()
-
         props = conditions
                 .map { it.qualifiedName }
                 .map { qn ->
-                    qn to map
-                            .filter { it.key.startsWith(qn) }
-                            .mapKeys { it.key.split("$qn.")[1] }
-                            .let { MutablePropertyValues(it) }
-                }
-                .map { (qn, properties) ->
-                    qn to ConditionProperties().apply {
-                        val binder = DataBinder(this)
-                        try {
-                            binder.bind(properties)
-                        } catch (e: BindException) {
-                            LOGGER.error("Failed to bind properties for condition: $qn", e)
-                        } finally {
-                            binder.close()
-                        }
-                    }
+                    LOGGER.debug("Attempting to bind condition: {}", qn)
+                    val bindable = Bindable.of(ConditionProperties::class.java)
+                    val properties = ConfigurationPropertySources.get(env)
+                    qn to Binder(properties)
+                            .bind(qn, bindable)
+                            .orElse(ConditionProperties())
                 }
                 .toMap()
     }
 
     override fun execute(contribution: StepContribution?, chunkContext: ChunkContext): RepeatStatus {
+        val phase = chunkContext.stepContext.stepExecution.executionContext[CONDITION_PHASE_KEY] as Condition.Phase
+
+        LOGGER.info("Executing {} conditions", phase)
+
         return conditions
                 .filter { it.phase() == phase }
                 .map { it.qualifiedName to it }
                 .filter { (qn, condition) ->
-                    props[qn]?.shouldRun ?: condition.shouldRun()
+                    val shouldRun = props[qn]?.shouldRun ?: condition.shouldRun()
+                    if (!shouldRun) {
+                        LOGGER.info("Condition: {} is skipped", condition.qualifiedName)
+                    }
+                    shouldRun
                 }
                 .sortedBy { (qn, condition) ->
-                    props[qn]?.order ?: condition.order()
+                    val order = props[qn]?.order ?: condition.order()
+                    LOGGER.debug("Condition: {} has order: {}", condition.qualifiedName, order)
+                    order
                 }
                 .map { (qn, condition) ->
                     val exitStatus = condition.run(chunkContext)
@@ -77,7 +69,7 @@ class ConditionsExecutor(private val phase: Condition.Phase, private val env: Co
                 }
                 .fold(ExitStatus.COMPLETED, ExitStatus::and)
                 .let {
-                    LOGGER.info("Combined exit status: {}", it)
+                    LOGGER.info("Combined exit status of all {} conditions: {}", phase, it)
                     RepeatStatus.FINISHED
                 }
     }
