@@ -1,5 +1,8 @@
 package org.abhijitsarkar.touchstone
 
+import org.abhijitsarkar.touchstone.condition.Condition
+import org.abhijitsarkar.touchstone.condition.ConditionsExecutor
+import org.abhijitsarkar.touchstone.execution.TestExecutorDecider
 import org.abhijitsarkar.touchstone.execution.gradle.GradleAgentImpl
 import org.abhijitsarkar.touchstone.execution.gradle.GradleExecutor
 import org.abhijitsarkar.touchstone.execution.gradle.GradleProperties
@@ -8,9 +11,6 @@ import org.abhijitsarkar.touchstone.execution.junit.JUnitExecutionSummary
 import org.abhijitsarkar.touchstone.execution.junit.JUnitExecutionSummaryRepository
 import org.abhijitsarkar.touchstone.execution.junit.JUnitExecutor
 import org.abhijitsarkar.touchstone.execution.junit.JUnitProperties
-import org.abhijitsarkar.touchstone.precondition.Teller
-import org.abhijitsarkar.touchstone.precondition.VotingDecider
-import org.abhijitsarkar.touchstone.precondition.VotingProperties
 import org.springframework.batch.core.Job
 import org.springframework.batch.core.Step
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing
@@ -23,6 +23,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.PropertySource
+import org.springframework.core.env.ConfigurableEnvironment
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 
 
@@ -39,14 +40,14 @@ class TouchstoneAutoConfiguration(
         private val jobs: JobBuilderFactory,
         private val steps: StepBuilderFactory,
         private val touchstoneProperties: TouchstoneProperties,
-        private val votingProperties: VotingProperties,
         private val junitProperties: JUnitProperties,
         private val gradleProperties: GradleProperties,
-        private val repo: JUnitExecutionSummaryRepository
+        private val repo: JUnitExecutionSummaryRepository,
+        private val env: ConfigurableEnvironment
 ) {
     @Bean
     fun junitExecutionStep(): Step {
-        return steps.get("execute-junit")
+        return steps.get("junit")
                 .tasklet(JUnitExecutor(junitProperties))
                 .allowStartIfComplete(touchstoneProperties.restartCompletedStep)
                 .listener(JUnitExecutionListener(repo))
@@ -55,19 +56,30 @@ class TouchstoneAutoConfiguration(
 
     @Bean
     fun gradleExecutionStep(): Step {
-        return steps.get("execute-gradle")
+        return steps.get("gradle")
                 .tasklet(GradleExecutor(GradleAgentImpl(gradleProperties)))
                 .allowStartIfComplete(touchstoneProperties.restartCompletedStep)
                 .build()
     }
 
     @Bean
-    fun teller() = Teller(votingProperties)
+    fun preConditionsExecutor() = ConditionsExecutor(Condition.Phase.PRE, env)
 
     @Bean
-    fun tellerStep(): Step {
-        return steps.get("count-votes")
-                .tasklet(teller())
+    fun postConditionsExecutor() = ConditionsExecutor(Condition.Phase.POST, env)
+
+    @Bean
+    fun preConditionsStep(): Step {
+        return steps.get("pre-test")
+                .tasklet(preConditionsExecutor())
+                .allowStartIfComplete(touchstoneProperties.restartCompletedStep)
+                .build()
+    }
+
+    @Bean
+    fun postConditionsStep(): Step {
+        return steps.get("post-test")
+                .tasklet(postConditionsExecutor())
                 .allowStartIfComplete(touchstoneProperties.restartCompletedStep)
                 .build()
     }
@@ -76,23 +88,16 @@ class TouchstoneAutoConfiguration(
     fun job(): Job {
         val testExecutorDecider = TestExecutorDecider(touchstoneProperties)
 
-        val votingDecider = VotingDecider(votingProperties)
-
-        val votingFlow = FlowBuilder<SimpleFlow>("voting-flow")
-                .start(votingDecider)
-                .on("SKIPPED").end()
-                .on("CONTINUE").to(tellerStep())
-                .end()
-
-        val testingFlow = FlowBuilder<SimpleFlow>("testing-flow")
+        val testingFlow = FlowBuilder<SimpleFlow>("test-flow")
                 .start(testExecutorDecider)
                 .on(TestExecutor.JUNIT.name).to(junitExecutionStep())
                 .from(testExecutorDecider).on(TestExecutor.GRADLE.name).to(gradleExecutionStep())
                 .end()
 
         return jobs.get(touchstoneProperties.jobName)
-                .start(votingFlow)
+                .flow(preConditionsStep())
                 .next(testingFlow)
+                .next(postConditionsStep())
                 .end()
                 .build()
     }

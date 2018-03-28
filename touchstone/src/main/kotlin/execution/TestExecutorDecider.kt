@@ -1,5 +1,6 @@
-package org.abhijitsarkar.touchstone
+package org.abhijitsarkar.touchstone.execution
 
+import org.abhijitsarkar.touchstone.TouchstoneProperties
 import org.slf4j.LoggerFactory
 import org.springframework.batch.core.JobExecution
 import org.springframework.batch.core.StepExecution

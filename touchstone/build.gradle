@@ -30,11 +30,11 @@ allprojects {
         }
     }
 
-    kotlin {
-        experimental {
-            coroutines "enable"
-        }
-    }
+//    kotlin {
+//        experimental {
+//            coroutines "enable"
+//        }
+//    }
 
     repositories {
         mavenCentral()
@@ -70,7 +70,7 @@ dependencies {
             "org.springframework.boot:spring-boot-starter-batch",
             "org.springframework.boot:spring-boot-starter-data-jpa",
             "org.jetbrains.kotlin:kotlin-reflect",
-            "org.jetbrains.kotlinx:kotlinx-coroutines-core:$couroutinesVersion",
+//            "org.jetbrains.kotlinx:kotlinx-coroutines-core:$couroutinesVersion",
             "org.junit.platform:junit-platform-console:$junitPlatformVersion",
             "org.slf4j:slf4j-api:$slf4jVersion",
             "org.gradle:gradle-tooling-api:$toolingApiVersion"

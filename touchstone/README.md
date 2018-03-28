@@ -6,4 +6,3 @@ Touchstone
 with `-Dtouchstone.junit.selectClass=org.abhijitsarkar.touchstone.demo.TouchstoneDemoTest`
 - To run using external H2 DB, run with `-Dspring.datasource.url='jdbc:h2:~/test;AUTO_SERVER=true'`
 - To change the test executor, run with `-Dtouchstone.testExecutor=[GRADLE|JUNIT]`
-- To skip voting, run with `-Dtouchstone.vote.skip=true`
