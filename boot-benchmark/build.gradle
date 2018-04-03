@@ -1,0 +1,65 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath(
+                "com.github.jengelman.gradle.plugins:shadow:$shadowPluginVersion",
+                "org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion"
+        )
+    }
+}
+
+allprojects {
+    apply plugin: "java"
+
+    group = "org.abhijitsarkar.spring"
+    version = "0.0.1-SNAPSHOT"
+    sourceCompatibility = 1.8
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+}
+
+dependencies {
+    implementation(
+            "org.openjdk.jmh:jmh-core:$jmhVersion",
+            "org.openjdk.jmh:jmh-generator-annprocess:$jmhVersion"
+    )
+}
+
+project(":minimal") {
+    apply plugin: "org.springframework.boot"
+    apply plugin: "io.spring.dependency-management"
+
+    dependencies {
+        implementation("org.springframework.boot:spring-boot-starter")
+        testImplementation("org.springframework.boot:spring-boot-starter-test")
+    }
+}
+
+project(":minimal-benchmark") {
+    apply plugin: "com.github.johnrengelman.shadow"
+
+    Task bootJarTask = rootProject.allprojects
+            .findAll { it.name != project.name }
+            .findResult { it.tasks.findByPath("bootJar") }
+
+    dependencies {
+        implementation(rootProject)
+        runtimeOnly(bootJarTask.outputs.files)
+    }
+    shadowJar {
+        entryCompression = org.gradle.api.tasks.bundling.ZipEntryCompression.STORED
+        manifest {
+            attributes(
+                    "Main-Class": "org.openjdk.jmh.Main",
+                    "Spring-Boot-Classes": "BOOT-INF/classes/",
+                    "Spring-Boot-Lib": "BOOT-INF/lib/",
+                    "Start-Class": bootJarTask.mainClassName
+            )
+        }
+    }
+}
