@@ -38,14 +38,18 @@ project(":minimal") {
         implementation("org.springframework.boot:spring-boot-starter")
         testImplementation("org.springframework.boot:spring-boot-starter-test")
     }
+
+    bootJar {
+        mainClassName = "org.abhijitsarkar.spring.minimal.MinimalApplication"
+    }
 }
 
 project(":minimal-benchmark") {
     apply plugin: "com.github.johnrengelman.shadow"
 
     Task bootJarTask = rootProject.allprojects
-            .findAll { it.name != project.name }
-            .findResult { it.tasks.findByPath("bootJar") }
+            .find { it.pluginManager.hasPlugin("org.springframework.boot") }
+            .bootJar
 
     dependencies {
         implementation(rootProject)
