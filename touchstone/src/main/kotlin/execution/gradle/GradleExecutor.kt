@@ -1,6 +1,7 @@
 package org.abhijitsarkar.touchstone.execution.gradle
 
 import org.slf4j.LoggerFactory
+import org.springframework.batch.core.ExitStatus
 import org.springframework.batch.core.StepContribution
 import org.springframework.batch.core.scope.context.ChunkContext
 import org.springframework.batch.core.step.tasklet.Tasklet
@@ -24,12 +25,13 @@ class GradleExecutor(private val gradleAgent: GradleAgent) : Tasklet {
                         .firstOrNull { GradleAgent.isGradleProject(it) }
             }
 
-    override fun execute(contribution: StepContribution?, chunkContext: ChunkContext?): RepeatStatus {
+    override fun execute(contribution: StepContribution, chunkContext: ChunkContext): RepeatStatus {
         if (projectDir != null) {
             LOGGER.info("Found Gradle project directory: {}", projectDir)
             gradleAgent.build(projectDir)
         } else {
             LOGGER.warn("Gradle project not found")
+            contribution.exitStatus = ExitStatus("SKIPPED")
         }
 
         return RepeatStatus.FINISHED

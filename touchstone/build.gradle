@@ -30,12 +30,6 @@ allprojects {
         }
     }
 
-//    kotlin {
-//        experimental {
-//            coroutines "enable"
-//        }
-//    }
-
     repositories {
         mavenCentral()
         maven { url "https://repo.gradle.org/gradle/libs-releases" }
@@ -64,13 +58,13 @@ apply plugin: "kotlin-jpa"
 dependencies {
     apiElements(
             "org.junit.jupiter:junit-jupiter-api:$junitVersion",
-            "org.slf4j:slf4j-api:$slf4jVersion"
+            "org.slf4j:slf4j-api:$slf4jVersion",
+            "org.springframework.boot:spring-boot-starter-batch"
     )
     implementation(
             "org.springframework.boot:spring-boot-starter-batch",
             "org.springframework.boot:spring-boot-starter-data-jpa",
             "org.jetbrains.kotlin:kotlin-reflect",
-//            "org.jetbrains.kotlinx:kotlinx-coroutines-core:$couroutinesVersion",
             "org.junit.platform:junit-platform-console:$junitPlatformVersion",
             "org.slf4j:slf4j-api:$slf4jVersion",
             "org.gradle:gradle-tooling-api:$toolingApiVersion"

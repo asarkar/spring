@@ -21,11 +21,13 @@ Let's look at each of italicized phrases above in detail:
    touchstone.condition.<phase>.<fully-qualified-classname>.should-run=[true|false]
    touchstone.condition.<phase>.<fully-qualified-classname>.order=<positive integer>
    ```
-
-   Currently, all the preconditions must succeed for the tests to run. However, using Spring profiles, JUnit 5 test
-   selection, and the ability to disable conditions externally, you can come up with almost arbitrary combinations of
-   `Condition`s and tests. A `Condition` must be a Spring bean - there are no other rules. You are free to implement
-   it however you like, using whatever libraries you like.
+   > * Replace special characters in the classname (`$` for anonymous classes) with `-`.
+   > * Tests are skipped if any of the preconditions fails. Postconditions are always executed.
+   > * If there are multiple pre/post conditions, all of them are executed. If you wish to skip a condition based on the
+       exit status of the previous condition, you may retrieve the last exit status from the `ChunkContext`, like so:
+       `chunkContext.stepContext.stepExecution.exitStatus`.
+       The name of the last executed condition is also available from the `ExecutionContext` map (`chunkContext.stepContext.stepExecution.executionContext`)
+       against the key `touchstone.condition.execution.last`.
 3. **Interact with external dependencies** - If your test setup/cleanup is trivial to simple, you're probably better off
    sticking with JUnit. But if you need to do things like insert mock data in the database and clean up afterwards,
    you'll benefit from Touchstone's modular design.
@@ -44,10 +46,14 @@ Let's look at each of italicized phrases above in detail:
    * To run using external H2 DB, run with `-Dspring.datasource.url='jdbc:h2:~/test;AUTO_SERVER=true'`
    * To change the test executor, run with `-Dtouchstone.test-executor=[GRADLE|JUNIT]`
 
-### Sample App
+### Demo Application
+Run [DemoApplication](touchstone-demo/src/main/kotlin/DemoApplication.kt) to simulate the following use cases:
 
-- To execute [TouchstoneDemoTest](touchstone-demo/src/main/kotlin/TouchstoneDemoTest.kt), run [TouchstoneDemoApplication](touchstone-demo/src/main/kotlin/TouchstoneDemoApplication.kt)
-with `-Dtouchstone.junit.select-class=org.abhijitsarkar.touchstone.demo.TouchstoneDemoTest`
+| Preconditions | Tests      | Postconditions | JVM Options                                                                                                                                       |
+|---------------|------------|----------------|---------------------------------------------------------------------------------------------------------------------------------------------------|
+| Successful    | Successful | Successful     | -Dtouchstone.junit.select-class=org.abhijitsarkar.touchstone.demo.PassingTest -Dtouchstone.condition.pre.failing-pre-condition-1.should-run=false |
+| Failed        | Skipped    | Successful     | -Dtouchstone.junit.select-class=DoesNotExist         |
+| Successful    | Failed     | Successful     | -Dtouchstone.junit.select-class=org.abhijitsarkar.touchstone.demo.FailingTest -Dtouchstone.condition.pre.failing-pre-condition-1.should-run=false |
 
 ### Languages/Frameworks
 

@@ -17,6 +17,6 @@ class ConditionTest {
             }
         }
 
-        assertThat(preCondition.qualifiedName).isEqualTo("${Condition.PREFIX}.pre.test-qualified-name\$pre-condition\$1")
+        assertThat(preCondition.qualifiedName).isEqualTo("${Condition.PREFIX}.pre.test-qualified-name-pre-condition-1")
     }
 }

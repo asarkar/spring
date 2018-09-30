@@ -7,13 +7,7 @@ import org.junit.jupiter.api.Test
 /**
  * @author Abhijit Sarkar
  */
-class TouchstoneDemoTest {
-    @Test
-    @DisplayName("should pass")
-    fun test1() {
-        assertTrue(true)
-    }
-
+class FailingTest {
     @Test
     @DisplayName("should fail")
     fun test2() {

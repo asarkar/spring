@@ -27,6 +27,6 @@ interface Condition {
     fun shouldRun(): Boolean = true
 
     val qualifiedName: String
-        get() = listOf(PREFIX, phase().name, javaClass.simpleName.toKebabCase())
+        get() = listOf(PREFIX, phase().name, javaClass.simpleName.replace("\\W".toRegex(), "-").toKebabCase())
                 .joinToString(separator = ".") { it.toLowerCase(Locale.ENGLISH) }
 }

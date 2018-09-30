@@ -98,13 +98,13 @@ class TouchstoneAutoConfiguration(
                 .start(testExecutorDecider)
                 .on(TestExecutor.JUNIT.name).to(junitExecutionStep())
                 .from(testExecutorDecider).on(TestExecutor.GRADLE.name).to(gradleExecutionStep())
-                .end()
+                .from(testExecutorDecider).on("*").end()
+                .build()
 
         return jobs.get(touchstoneProperties.jobName)
-                .flow(preConditionsStep())
-                .next(testingFlow)
-                .on("*").to(postConditionsStep())
-                .end()
+                .start(preConditionsStep())
+                .on("*").to(testingFlow)
+                .from(testingFlow).on("*").to(postConditionsStep()).end()
                 .build()
     }
 }

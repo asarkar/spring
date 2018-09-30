@@ -1,6 +1,7 @@
 package org.abhijitsarkar.touchstone.execution.junit
 
 import org.slf4j.LoggerFactory
+import org.springframework.batch.core.ExitStatus
 import org.springframework.batch.core.StepContribution
 import org.springframework.batch.core.scope.context.ChunkContext
 import org.springframework.batch.core.step.tasklet.Tasklet
@@ -24,7 +25,7 @@ class JUnitExecutor(
         const val EXECUTION_RESULT_KEY = "touchstone.junit.executionResult"
     }
 
-    override fun execute(contribution: StepContribution?, chunkContext: ChunkContext): RepeatStatus {
+    override fun execute(contribution: StepContribution, chunkContext: ChunkContext): RepeatStatus {
         val args = mutableListOf<String>()
 
         if (junit.help)
@@ -129,9 +130,10 @@ class JUnitExecutor(
 
         chunkContext.stepContext.stepExecution.executionContext.put(EXECUTION_RESULT_KEY, result)
 
-        return if (result.exitCode == 0)
-            RepeatStatus.FINISHED
-        else
-            throw TestFailedException(exitCode = result.exitCode)
+        if (result.exitCode != 0) {
+            contribution.exitStatus = ExitStatus.FAILED
+        }
+
+        return RepeatStatus.FINISHED
     }
 }

@@ -11,6 +11,7 @@ import org.mockito.Mockito.inOrder
 import org.mockito.Mockito.never
 import org.mockito.Mockito.verify
 import org.springframework.batch.core.ExitStatus
+import org.springframework.batch.core.StepContribution
 import org.springframework.batch.core.scope.context.ChunkContext
 import org.springframework.batch.repeat.RepeatStatus
 import org.springframework.core.env.ConfigurableEnvironment
@@ -29,6 +30,7 @@ class ConditionsExecutorTest {
     private val chunkContext = Mockito.mock(ChunkContext::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val env = Mockito.mock(ConfigurableEnvironment::class.java)
     private val executor = ConditionsExecutor(env)
+    private lateinit var contribution: StepContribution
 
     @BeforeEach
     fun beforeEach() {
@@ -64,6 +66,7 @@ class ConditionsExecutorTest {
 
         executor.conditions = conditions
         executor.postConstruct()
+        contribution = Mockito.mock(StepContribution::class.java)
     }
 
     @Test
@@ -72,7 +75,7 @@ class ConditionsExecutorTest {
         `when`(chunkContext.stepContext.stepExecution.executionContext[ConditionsExecutor.CONDITION_PHASE_KEY])
                 .thenReturn(Condition.Phase.PRE)
 
-        val status = executor.execute(null, chunkContext)
+        val status = executor.execute(contribution, chunkContext)
 
         assertThat(status).isEqualTo(RepeatStatus.FINISHED)
 
@@ -88,7 +91,7 @@ class ConditionsExecutorTest {
         `when`(chunkContext.stepContext.stepExecution.executionContext[ConditionsExecutor.CONDITION_PHASE_KEY])
                 .thenReturn(Condition.Phase.POST)
 
-        val status = executor.execute(null, chunkContext)
+        val status = executor.execute(contribution, chunkContext)
 
         assertThat(status).isEqualTo(RepeatStatus.FINISHED)
 

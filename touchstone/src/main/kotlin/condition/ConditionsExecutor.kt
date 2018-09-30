@@ -20,6 +20,7 @@ class ConditionsExecutor(private val env: Environment) : Tasklet {
     companion object {
         private val LOGGER = LoggerFactory.getLogger(ConditionsExecutor::class.java)
         const val CONDITION_PHASE_KEY = "${Condition.PREFIX}.phase"
+        const val LAST_CONDITION_KEY = "${Condition.PREFIX}.execution.last"
     }
 
     @Autowired(required = false)
@@ -42,7 +43,7 @@ class ConditionsExecutor(private val env: Environment) : Tasklet {
                 .toMap()
     }
 
-    override fun execute(contribution: StepContribution?, chunkContext: ChunkContext): RepeatStatus {
+    override fun execute(contribution: StepContribution, chunkContext: ChunkContext): RepeatStatus {
         val phase = chunkContext.stepContext.stepExecution.executionContext[CONDITION_PHASE_KEY] as Condition.Phase
 
         LOGGER.info("Executing {} conditions", phase)
@@ -62,14 +63,29 @@ class ConditionsExecutor(private val env: Environment) : Tasklet {
                     LOGGER.debug("Condition: {} has order: {}", condition.qualifiedName, order)
                     order
                 }
-                .map { (qn, condition) ->
-                    val exitStatus = condition.run(chunkContext)
-                    LOGGER.info("Condition: {} exited with: {}", qn, exitStatus)
+                .map { (_, condition) ->
+                    val qn = condition.qualifiedName
+                    LOGGER.info("Executing condition: {}", qn)
+                    val exitStatus = try {
+                        condition.run(chunkContext)
+                    } catch (e: Exception) {
+                        LOGGER.error("Condition: {} failed", qn, e)
+                        chunkContext.stepContext.stepExecution.addFailureException(e)
+                        ExitStatus.FAILED
+                    }
+                    chunkContext.stepContext.stepExecution.apply {
+                        this.exitStatus = exitStatus
+                        this.executionContext.put(LAST_CONDITION_KEY, qn)
+                    }
                     exitStatus
                 }
                 .fold(ExitStatus.COMPLETED, ExitStatus::and)
-                .let {
-                    LOGGER.info("Combined exit status of all {} conditions: {}", phase, it)
+                .let { exitStatus ->
+                    chunkContext.stepContext.stepExecution.apply {
+                        this.exitStatus = exitStatus
+                        this.executionContext.remove(LAST_CONDITION_KEY)
+                    }
+                    LOGGER.info("Combined exit status of all {} conditions: {}", phase, exitStatus)
                     RepeatStatus.FINISHED
                 }
     }
