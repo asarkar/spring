@@ -8,7 +8,8 @@ plugins {
 
 group = "org.asarkar"
 version = "1.0-SNAPSHOT"
-java.sourceCompatibility = JavaVersion.VERSION_11
+// Kotlin generates Java 8 byte code
+java.sourceCompatibility = JavaVersion.VERSION_1_8
 
 repositories {
     mavenCentral()
@@ -60,6 +61,7 @@ test {
 
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
     kotlinOptions {
-        jvmTarget = "11"
+        // Kotlin generates Java 8 byte code
+        jvmTarget = "1.8"
     }
 }
