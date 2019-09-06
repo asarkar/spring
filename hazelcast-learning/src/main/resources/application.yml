@@ -1,0 +1,10 @@
+spring:
+  application.name: hazelcast-learning
+  main.allow-bean-definition-overriding: true
+logging:
+  level:
+    org.springframework: WARN
+    org.asarkar: DEBUG
+    com.hazelcast: INFO
+  pattern:
+    console: '%date{"yyyy-MM-dd HH:mm:ss.SSS", GMT} [%thread] [%-5level] %logger{3} - %msg%n'
