@@ -1,5 +1,6 @@
 plugins {
     kotlin("jvm")
+    id("org.asarkar.gradle.build-time-tracker")
 }
 
 repositories {

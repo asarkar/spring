@@ -52,13 +52,13 @@ class WaveHeader(bytes: ByteArray) {
         String(bytes.copyOfRange(start, start + 4))
              // remove all null chars
             .replace("\u0000", "")
-            .also { start += it.length },
+            .also { start += 4 },
         ByteBuffer.wrap(bytes.copyOfRange(start, start + 4)).order(ByteOrder.LITTLE_ENDIAN)
             .also { start += it.capacity() }.int
     )
 
     init {
-        assert(start == 44) { "Illegal state" }
+        check(start == 44) { "Expected to have read 44 bytes but read $start" }
     }
 
     data class RiffChunk(val id: String, val size: Int, val format: String)
