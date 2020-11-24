@@ -12,6 +12,7 @@ import org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoCo
 import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Bean
 import org.springframework.core.env.ConfigurableEnvironment
+import org.springframework.data.redis.connection.RedisClusterConfiguration
 import org.springframework.data.redis.connection.RedisConfiguration
 import org.springframework.data.redis.connection.RedisNode
 import org.springframework.data.redis.connection.RedisPassword
@@ -56,11 +57,36 @@ class App {
 
         return RedisSentinelConfiguration().apply {
             master(sentinelProperties.master)
-            setSentinels(sentinels.map { parseRedisNode(it) })
+            setSentinels(sentinels.map { parseRedisNode(it, 26379) })
             username = redisProperties.username
             redisProperties.password?.also { password = RedisPassword.of(it) }
             sentinelProperties.password?.also { sentinelPassword = RedisPassword.of(it) }
             database = redisProperties.database
+        }
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(RedisConfiguration::class)
+    @ConditionalOnProperty("redis.cluster.enabled", havingValue = "true")
+    fun redisClusterConfiguration(
+        redisProperties: RedisProperties,
+        env: ConfigurableEnvironment
+    ): RedisClusterConfiguration {
+        val clusterProperties: RedisProperties.Cluster? = redisProperties.cluster
+        val nodes = if (clusterProperties == null || CollectionUtils.isEmpty(clusterProperties.nodes)) {
+            // Auto-detect cluster nodes based on Docker Compose container names
+            val appName = env.getRequiredProperty("spring.application.name")
+            val clusterPrefix = env.getProperty("redis.cluster.prefix", "${appName}_redis-cluster")
+            generateSequence(1) { it + 1 }
+                .map { "${clusterPrefix}_${it}_1" }
+                .takeWhile(this::isReachable)
+                .toList()
+                .also { logger.info("Detected cluster nodes: {}", it) }
+        } else clusterProperties.nodes
+
+        return RedisClusterConfiguration().apply {
+            setClusterNodes(nodes.map { parseRedisNode(it, 6379) })
+            redisProperties.password?.also { password = RedisPassword.of(it) }
         }
     }
 
@@ -72,9 +98,9 @@ class App {
         }
     }
 
-    private fun parseRedisNode(str: String): RedisNode {
+    private fun parseRedisNode(str: String, defaultPort: Int): RedisNode {
         val parts = str.split(':')
-        val port = if (parts.size == 1) 26379
+        val port = if (parts.size == 1) defaultPort
         else parts.last().toInt()
 
         return RedisNode(parts.first(), port)

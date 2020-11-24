@@ -1,0 +1,75 @@
+version: "3"
+
+services:
+  redis-cluster_1:
+    image: bitnami/redis-cluster
+    ports:
+      - "6379"
+    environment:
+      - REDIS_PASSWORD=str0ng_passw0rd
+      - REDIS_NODES=redis-cluster_1 redis-cluster_2 redis-cluster_3 redis-cluster_4 redis-cluster_5 redis-cluster_6
+
+  redis-cluster_2:
+    image: bitnami/redis-cluster
+    ports:
+      - "6379"
+    environment:
+      - REDIS_PASSWORD=str0ng_passw0rd
+      - REDIS_NODES=redis-cluster_1 redis-cluster_2 redis-cluster_3 redis-cluster_4 redis-cluster_5 redis-cluster_6
+
+  redis-cluster_3:
+    image: bitnami/redis-cluster
+    ports:
+      - "6379"
+    environment:
+      - REDIS_PASSWORD=str0ng_passw0rd
+      - REDIS_NODES=redis-cluster_1 redis-cluster_2 redis-cluster_3 redis-cluster_4 redis-cluster_5 redis-cluster_6
+
+  redis-cluster_4:
+    image: bitnami/redis-cluster
+    ports:
+      - "6379"
+    environment:
+      - REDIS_PASSWORD=str0ng_passw0rd
+      - REDIS_NODES=redis-cluster_1 redis-cluster_2 redis-cluster_3 redis-cluster_4 redis-cluster_5 redis-cluster_6
+
+  redis-cluster_5:
+    image: bitnami/redis-cluster
+    ports:
+      - "6379"
+    environment:
+      - REDIS_PASSWORD=str0ng_passw0rd
+      - REDIS_NODES=redis-cluster_1 redis-cluster_2 redis-cluster_3 redis-cluster_4 redis-cluster_5 redis-cluster_6
+
+  redis-cluster_6:
+    image: bitnami/redis-cluster
+    ports:
+      - "6379"
+    environment:
+      - REDIS_PASSWORD=str0ng_passw0rd
+      - REDIS_NODES=redis-cluster_1 redis-cluster_2 redis-cluster_3 redis-cluster_4 redis-cluster_5 redis-cluster_6
+
+  redis-cluster-creator:
+    image: bitnami/redis-cluster
+    depends_on:
+      - redis-cluster_1
+      - redis-cluster_2
+      - redis-cluster_3
+      - redis-cluster_4
+      - redis-cluster_5
+      - redis-cluster_6
+    environment:
+      - REDISCLI_AUTH=str0ng_passw0rd
+      - REDIS_CLUSTER_REPLICAS=1
+      - REDIS_NODES=redis-cluster_1 redis-cluster_2 redis-cluster_3 redis-cluster_4 redis-cluster_5 redis-cluster_6
+      - REDIS_CLUSTER_CREATOR=yes
+  app:
+    image: "redis-learning"
+    container_name: redis-learning
+    environment:
+      - REDIS_CLUSTER_ENABLED=true
+      - SPRING_REDIS_PASSWORD=str0ng_passw0rd
+    ports:
+      - "8080:8080"
+    depends_on:
+      - redis-cluster-creator

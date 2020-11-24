@@ -1,3 +1,44 @@
+##### Build Application Docker Image
+```
+redis-learning$ ./gradlew clean bootBuildImage
+```
+
+##### Start standalone Redis server
+````
+redis-learning$ docker run -d --rm --name redis -p 6379:6379 -e ALLOW_EMPTY_PASSWORD=yes bitnami/redis
+````
+
+##### Connect to Redis CLI
+```
+redis-learning$ docker exec -it <container name or id> redis-cli
+```
+
+##### Authenticate on Redis CLI
+```
+127.0.0.1:6379> AUTH <password>
+```
+
+##### Start Redis replica
+```
+redis-learning$ docker-compose -f redis-replica.yaml up -d
+```
+
+##### Get replication info
+```
+127.0.0.1:6379> INFO replication
+```
+
+##### Start Redis cluster
+```
+redis-learning$ docker-compose -f redis-cluster.yaml up -d
+```
+
+##### Get cluster info
+```
+127.0.0.1:6379> CLUSTER NODES
+```
+https://redis.io/commands/cluster-nodes
+
 ##### Start Redis sentinels
 ```
 redis-learning$ docker-compose -f redis-sentinel.yaml up --scale redis-sentinel=3 -d
@@ -30,16 +71,6 @@ redis-learning$ curl -H "Content-Type: application/json" \
 ##### Find a record by id
 ```
 redis-learning$ curl "http://localhost:8080/persons/{id}"
-```
-
-##### Start standalone Redis server
-````
-redis-learning$ docker run -d --rm --name redis -p 6379:6379 -e ALLOW_EMPTY_PASSWORD=yes bitnami/redis
-````
-
-##### Start Redis replica
-```
-redis-learning$ docker-compose -f redis-replica.yaml up -d
 ```
 
 ##### Find container IP
