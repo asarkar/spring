@@ -11,7 +11,7 @@
     <name>spring-conditional</name>
 
     <properties>
-        <springframework.version>4.3.9.RELEASE</springframework.version>
+        <springframework.version>5.3.1</springframework.version>
     </properties>
 
     <dependencies>
