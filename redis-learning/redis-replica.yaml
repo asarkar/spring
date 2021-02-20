@@ -1,0 +1,34 @@
+version: "3"
+
+services:
+  redis-master:
+    image: "bitnami/redis"
+    container_name: redis-master
+    environment:
+      - REDIS_REPLICATION_MODE=master
+      - REDIS_PASSWORD=str0ng_passw0rd
+    ports:
+      - "6379"
+  redis-replica:
+    image: "bitnami/redis"
+    environment:
+      - REDIS_REPLICATION_MODE=slave
+      - REDIS_MASTER_HOST=redis-master
+      - REDIS_MASTER_PASSWORD=str0ng_passw0rd
+      - REDIS_PASSWORD=str0ng_passw0rd
+    ports:
+      - "6379"
+    depends_on:
+      - redis-master
+  app:
+    image: "redis-learning"
+    container_name: redis-learning
+    environment:
+      - SPRING_REDIS_HOST=redis-master
+      - SPRING_REDIS_PASSWORD=str0ng_passw0rd
+      - SPRING_REDIS_TIMEOUT=PT1S
+      - SPRING_REDIS_CONNECT_TIMEOUT=PT0.5S
+    ports:
+      - "8080:8080"
+    depends_on:
+      - redis-replica
